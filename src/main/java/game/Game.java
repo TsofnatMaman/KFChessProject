@@ -17,7 +17,7 @@ public class Game {
 
     public Game(Board board, PlayerCursor cursor1, PlayerCursor cursor2) {
         this.board = board;
-        player1 = new Player(cursor1); // בלי צבע
+        player1 = new Player(cursor1);
         player2 = new Player(cursor2);
         commandQueue = new ArrayList<>();
     }
