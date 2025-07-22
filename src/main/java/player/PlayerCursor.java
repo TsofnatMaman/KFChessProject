@@ -50,4 +50,8 @@ public class PlayerCursor {
     public int getCol() {
         return col;
     }
+
+    public int[] getPosition(){
+        return new int[]{getRow(), getCol()};
+    }
 }

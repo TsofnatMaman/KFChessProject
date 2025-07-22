@@ -1,6 +1,7 @@
 package view;
 
 import board.Board;
+import game.Game;
 import player.PlayerCursor;
 
 import javax.imageio.ImageIO;
@@ -13,17 +14,21 @@ import java.io.IOException;
 import java.net.URL;
 
 public class BoardPanel extends JPanel {
+    private Game game;
     private BufferedImage boardImage;
     private Board board;
 
     private PlayerCursor cursor1;
     private PlayerCursor cursor2;
 
-    public BoardPanel(PlayerCursor pc1, PlayerCursor pc2) {
+    public BoardPanel(Game game, PlayerCursor pc1, PlayerCursor pc2) {
+        this.game = game;
         setPreferredSize(new Dimension(800, 800));
         setFocusable(true);
 
-        board = Board.loadBoardFromCSV();
+        loadBoardImage();
+
+        board = new Board(getBoardImageWidth(), getBoardImageHeight()).loadBoardFromCSV();
 
         // אתחל את הקורסורים במיקומים התחלתיים, למשל
         cursor1 = pc1;
@@ -41,6 +46,10 @@ public class BoardPanel extends JPanel {
         });
     }
 
+    public Board getBoard() {
+        return board;
+    }
+
     private void loadBoardImage() {
         try {
             URL imageUrl = getClass().getClassLoader().getResource("board/board.png");
@@ -52,6 +61,14 @@ public class BoardPanel extends JPanel {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public int getBoardImageWidth() {
+        return boardImage != null ? boardImage.getWidth() : -1;
+    }
+
+    public int getBoardImageHeight() {
+        return boardImage != null ? boardImage.getHeight() : -1;
     }
 
     private void handleKey(KeyEvent e) {
@@ -72,9 +89,12 @@ public class BoardPanel extends JPanel {
                 cursor1.moveRight();
                 break;
             case KeyEvent.VK_ENTER:
-                // פעולת בחירה לשחקן 1
                 System.out.println("Player 1 pressed ENTER");
+                if (game != null) {
+                    game.handleSelection(game.getPlayer1());
+                }
                 break;
+
         }
 
         // שחקן 2 - WASD + SPACE
@@ -91,9 +111,12 @@ public class BoardPanel extends JPanel {
             case KeyEvent.VK_D:
                 cursor2.moveRight();
                 break;
+
             case KeyEvent.VK_SPACE:
-                // פעולת בחירה לשחקן 2
                 System.out.println("Player 2 pressed SPACE");
+                if (game != null) {
+                    game.handleSelection(game.getPlayer2());
+                }
                 break;
         }
 

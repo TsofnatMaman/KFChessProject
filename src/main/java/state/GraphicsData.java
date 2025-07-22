@@ -1,56 +1,66 @@
 package state;
 
-import java.awt.*;
-import java.util.List;
+import java.awt.image.BufferedImage;
 
 public class GraphicsData {
-    private List<Image> sprites;
-    private int framesPerSecond;
+    private BufferedImage[] frames;
+    private int totalFrames;
+    private int currentFrame;
+    private double framesPerSec;
     private boolean isLoop;
+    private long lastFrameTimeNanos;
 
-    private int currentFrame = 0;
-    private long lastFrameTime = 0; // נמדד בננו־שניות
-
-    public GraphicsData(List<Image> sprites, int framesPerSecond, boolean isLoop) {
-        this.sprites = sprites;
-        this.framesPerSecond = framesPerSecond;
+    public GraphicsData(BufferedImage[] frames, double framesPerSec, boolean isLoop) {
+        this.frames = frames;
+        this.totalFrames = frames.length;
+        this.framesPerSec = framesPerSec;
         this.isLoop = isLoop;
-        reset();
+        this.currentFrame = 0;
+        this.lastFrameTimeNanos = System.nanoTime();
     }
 
-    public void reset() {
-        currentFrame = 0;
-        lastFrameTime = System.nanoTime(); // חשוב! nanoTime ולא currentTimeMillis
+    public void reset(String state, int[] to) {
+        // אפס רק כשעוברים לסטייט חדש
+        this.currentFrame = 0;
+        this.lastFrameTimeNanos = System.nanoTime();
     }
 
-    // מעדכן את הפריים בהתאם לזמן שעבר
     public void update() {
-        if (sprites == null || sprites.isEmpty()) {
-            return;
-        }
-
         long now = System.nanoTime();
-        long frameDuration = 1_000_000_000L / framesPerSecond; // ננו־שניות לפריים
+        double elapsedSec = (now - lastFrameTimeNanos) / 1_000_000_000.0;
 
-        if (now - lastFrameTime > frameDuration) {
+        if (elapsedSec >= 1.0 / framesPerSec) {
             currentFrame++;
+            lastFrameTimeNanos = now;
 
-            if (currentFrame >= sprites.size()) {
-                if (isLoop) {
-                    currentFrame = 0;
-                } else {
-                    currentFrame = sprites.size() - 1;
-                }
+            if (currentFrame >= totalFrames) {
+                currentFrame = isLoop ? 0 : totalFrames - 1;
             }
-
-            lastFrameTime = now;
         }
     }
 
-    public Image getCurrentFrame() {
-        if (sprites == null || sprites.isEmpty()) {
-            return null;
-        }
-        return sprites.get(currentFrame);
+    // שיטה חדשה לבדיקת סיום אנימציה למצב לא לולאה
+    public boolean isAnimationFinished() {
+        return !isLoop && currentFrame >= totalFrames - 1;
+    }
+
+    public int getCurrentNumFrame() {
+        return currentFrame;
+    }
+
+    public int getTotalFrames() {
+        return totalFrames;
+    }
+
+    public double getFramesPerSec() {
+        return framesPerSec;
+    }
+
+    public boolean isLoop() {
+        return isLoop;
+    }
+
+    public BufferedImage getCurrentFrame() {
+        return frames[currentFrame];
     }
 }

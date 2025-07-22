@@ -6,7 +6,10 @@ import graphics.GraphicsLoader;
 import state.*;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.*;
 
 public class PiecesFactory {
@@ -14,38 +17,59 @@ public class PiecesFactory {
     private static final int TILE_SIZE = 64;
     private static final ObjectMapper mapper = new ObjectMapper();
 
-
     public static Piece createPieceByCode(String code, int row, int col) {
-        String path = "/pieces/" + code + "/states/idle/config.json";
-        try (InputStream is = PiecesFactory.class.getResourceAsStream(path)) {
-            if (is == null) {
-                System.err.println("Config file not found for: " + path);
+        Map<String, State> states = new HashMap<>();
+        String basePath = "/pieces/" + code + "/states/";
+
+        try {
+            // שלב 1 – מצא את כל המצבים הקיימים בתיקיית states
+            URL dirURL = PiecesFactory.class.getResource(basePath);
+            if (dirURL == null || !dirURL.getProtocol().equals("file")) {
+                System.err.println("Cannot load states from: " + basePath);
                 return null;
             }
 
-            JsonNode root = mapper.readTree(is);
+            File statesDir = new File(dirURL.toURI());
+            File[] subdirs = statesDir.listFiles(File::isDirectory);
+            if (subdirs == null) return null;
 
-            JsonNode physicsNode = root.path("physics");
-            double speed = physicsNode.path("speed_m_per_sec").asDouble(0.0);
-            String nextState = physicsNode.path("next_state_when_finished").asText("idle");
+            // שלב 2 – טען כל מצב
+            for (File stateFolder : subdirs) {
+                String stateName = stateFolder.getName();
+                String configPath = basePath + stateName + "/config.json";
+                InputStream is = PiecesFactory.class.getResourceAsStream(configPath);
+                if (is == null) {
+                    System.err.println("Missing config for state: " + stateName);
+                    continue;
+                }
 
-            PhysicsData physics = new PhysicsData(speed, nextState);
+                JsonNode root = mapper.readTree(is);
+                JsonNode physicsNode = root.path("physics");
+                double speed = physicsNode.path("speed_m_per_sec").asDouble(0.0);
+                String nextState = physicsNode.path("next_state_when_finished").asText(stateName);
 
-            JsonNode graphicsNode = root.path("graphics");
-            int fps = graphicsNode.path("frames_per_sec").asInt(1);
-            boolean isLoop = graphicsNode.path("is_loop").asBoolean(true);
+                PhysicsData physics = new PhysicsData(speed, nextState);
 
-            List<Image> sprites = GraphicsLoader.loadAllSprites(code, "idle");
-            if (sprites.isEmpty()) return null;
+                JsonNode graphicsNode = root.path("graphics");
+                int fps = graphicsNode.path("frames_per_sec").asInt(1);
+                boolean isLoop = graphicsNode.path("is_loop").asBoolean(true);
 
-            GraphicsData graphics = new GraphicsData(sprites, fps, isLoop);
+                BufferedImage[] sprites = GraphicsLoader.loadAllSprites(code, stateName);
+                if (sprites.length == 0) {
+                    System.err.println("No sprites for state: " + stateName);
+                    continue;
+                }
 
-            State idleState = new State(row, col, row, col, TILE_SIZE, physics, graphics);
+                GraphicsData graphics = new GraphicsData(sprites, fps, isLoop);
+                State state = new State(row, col, row, col, TILE_SIZE, physics, graphics);
+                states.put(stateName, state);
+            }
 
-            Map<String, State> states = new HashMap<>();
-            states.put("idle", idleState);
+            if (states.isEmpty()) return null;
 
-            return new Piece(states, "idle", row, col);
+            // שלב 3 – צור את ה-Piece עם המצב הראשון כברירת מחדל
+            String initialState = "idle";
+            return new Piece(states, initialState, row, col);
 
         } catch (Exception e) {
             e.printStackTrace();

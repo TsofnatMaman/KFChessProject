@@ -4,7 +4,7 @@
     "next_state_when_finished": "idle"
   },
   "graphics": {
-    "frames_per_sec": 6,
+    "frames_per_sec": 1,
     "is_loop": false
   }
 }
