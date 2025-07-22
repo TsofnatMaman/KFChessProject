@@ -137,7 +137,7 @@ public class BoardPanel extends JPanel {
 
         // ציור הכלים
         if (board != null)
-            board.drawAll(g);
+            board.drawAll(g, getWidth(), getHeight());
 
         // ציור הקורסורים (הריבועים) על הלוח
         if (cursor1 != null) cursor1.draw(g, getWidth(), getHeight());

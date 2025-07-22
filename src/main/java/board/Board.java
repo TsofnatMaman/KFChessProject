@@ -32,9 +32,9 @@ public class Board {
         return board[i][j] != null;
     }
 
-    public void drawAll(Graphics g) {
-        int squareWidth = g.getClipBounds().width / ROWS;
-        int squareHeight = g.getClipBounds().height / COLS;
+    public void drawAll(Graphics g, int panelWidth, int panelHeight) {
+        int squareWidth = panelWidth / COLS;
+        int squareHeight = panelHeight / ROWS;
 
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {

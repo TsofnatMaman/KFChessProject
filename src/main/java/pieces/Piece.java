@@ -69,9 +69,19 @@ public class Piece {
         BufferedImage sprite = currentState.getGraphics().getCurrentFrame();
         if (sprite == null) return;
 
-        // צייר לפי המיקום המדויק בפיקסלים (לא רק לפי תאי הלוח)
-        Point2D.Double pos = getCurrentPixelPosition();
-        g.drawImage(sprite, (int) pos.getX(), (int) pos.getY(), width, height, null);
+        if (currentStateName.equals("move")) {
+            // בזמן תנועה - המר את המיקום הפיקסלי למערכת הקואורדינטות האמיתית
+            Point2D.Double pos = getCurrentPixelPosition();
+
+            // המר מ-TILE_SIZE=64 לגודל המשבצת האמיתי
+            double realX = (pos.getX() / 64.0) * width;
+            double realY = (pos.getY() / 64.0) * height;
+
+            g.drawImage(sprite, (int) realX, (int) realY, width, height, null);
+        } else {
+            // כשלא בתנועה - השתמש במיקום המדויק של המשבצת
+            g.drawImage(sprite, x, y, width, height, null);
+        }
     }
 
     public int getRow() {
