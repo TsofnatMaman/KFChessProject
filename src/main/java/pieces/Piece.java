@@ -2,9 +2,7 @@ package pieces;
 
 import state.State;
 
-import java.awt.*;
 import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
 import java.util.Map;
 
 public class Piece {
@@ -32,6 +30,10 @@ public class Piece {
             int[] pos = new int[]{this.row, this.col};
             currentState.reset(newStateName, pos);
         }
+    }
+
+    public State getCurrentState() {
+        return currentState;
     }
 
     public void update() {
@@ -65,24 +67,24 @@ public class Piece {
         }
     }
 
-    public void draw(Graphics g, int x, int y, int width, int height) {
-        BufferedImage sprite = currentState.getGraphics().getCurrentFrame();
-        if (sprite == null) return;
-
-        if (currentStateName.equals("move")) {
-            // בזמן תנועה - המר את המיקום הפיקסלי למערכת הקואורדינטות האמיתית
-            Point2D.Double pos = getCurrentPixelPosition();
-
-            // המר מ-TILE_SIZE=64 לגודל המשבצת האמיתי
-            double realX = (pos.getX() / 64.0) * width;
-            double realY = (pos.getY() / 64.0) * height;
-
-            g.drawImage(sprite, (int) realX, (int) realY, width, height, null);
-        } else {
-            // כשלא בתנועה - השתמש במיקום המדויק של המשבצת
-            g.drawImage(sprite, x, y, width, height, null);
-        }
-    }
+//    public void draw(Graphics g, int x, int y, int width, int height) {
+//        BufferedImage sprite = currentState.getGraphics().getCurrentFrame();
+//        if (sprite == null) return;
+//
+//        if (currentStateName.equals("move")) {
+//            // בזמן תנועה - המר את המיקום הפיקסלי למערכת הקואורדינטות האמיתית
+//            Point2D.Double pos = getCurrentPixelPosition();
+//
+//            // המר מ-TILE_SIZE=64 לגודל המשבצת האמיתי
+//            double realX = (pos.getX() / 64.0) * width;
+//            double realY = (pos.getY() / 64.0) * height;
+//
+//            g.drawImage(sprite, (int) realX, (int) realY, width, height, null);
+//        } else {
+//            // כשלא בתנועה - השתמש במיקום המדויק של המשבצת
+//            g.drawImage(sprite, x, y, width, height, null);
+//        }
+//    }
 
     public int getRow() {
         return row;

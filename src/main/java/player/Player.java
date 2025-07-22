@@ -6,6 +6,7 @@ public class Player {
 
     public Player(PlayerCursor pc){
         this.cursor = pc;
+        pending=null;
     }
 
     public PlayerCursor getCursor() {
@@ -23,6 +24,6 @@ public class Player {
     public String getCurrentSelection() {
         int row = cursor.getRow();
         int col = cursor.getCol();
-        return col + "," + row;
+        return row + "," + col;
     }
 }

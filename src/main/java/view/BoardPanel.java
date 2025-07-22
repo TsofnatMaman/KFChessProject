@@ -1,7 +1,7 @@
 package view;
 
 import board.Board;
-import game.Game;
+import board.BoardRenderer;
 import player.PlayerCursor;
 
 import javax.imageio.ImageIO;
@@ -12,42 +12,34 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.function.Consumer;
 
 public class BoardPanel extends JPanel {
-    private Game game;
     private BufferedImage boardImage;
-    private Board board;
+    private final Board board;
 
-    private PlayerCursor cursor1;
-    private PlayerCursor cursor2;
+    private final PlayerCursor cursor1;
+    private final PlayerCursor cursor2;
 
-    public BoardPanel(Game game, PlayerCursor pc1, PlayerCursor pc2) {
-        this.game = game;
+    private Consumer<Void> onPlayer1Action;
+    private Consumer<Void> onPlayer2Action;
+
+    public BoardPanel(Board board, PlayerCursor pc1, PlayerCursor pc2) {
+        this.board = board;
+        this.cursor1 = pc1;
+        this.cursor2 = pc2;
+
         setPreferredSize(new Dimension(800, 800));
         setFocusable(true);
 
         loadBoardImage();
 
-        board = new Board(getBoardImageWidth(), getBoardImageHeight()).loadBoardFromCSV();
-
-        // אתחל את הקורסורים במיקומים התחלתיים, למשל
-        cursor1 = pc1;
-        cursor2 = pc2;
-
-        // טען את התמונה של הלוח (כמו שהיה)
-        loadBoardImage();
-
-        // הוסף מאזין למקלדת:
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 handleKey(e);
             }
         });
-    }
-
-    public Board getBoard() {
-        return board;
     }
 
     private void loadBoardImage() {
@@ -63,18 +55,9 @@ public class BoardPanel extends JPanel {
         }
     }
 
-    public int getBoardImageWidth() {
-        return boardImage != null ? boardImage.getWidth() : -1;
-    }
-
-    public int getBoardImageHeight() {
-        return boardImage != null ? boardImage.getHeight() : -1;
-    }
-
     private void handleKey(KeyEvent e) {
         int key = e.getKeyCode();
 
-        // שחקן 1 - חצים + ENTER
         switch (key) {
             case KeyEvent.VK_UP:
                 cursor1.moveUp();
@@ -89,15 +72,10 @@ public class BoardPanel extends JPanel {
                 cursor1.moveRight();
                 break;
             case KeyEvent.VK_ENTER:
-                System.out.println("Player 1 pressed ENTER");
-                if (game != null) {
-                    game.handleSelection(game.getPlayer1());
-                }
+                if (onPlayer1Action != null) onPlayer1Action.accept(null);
                 break;
-
         }
 
-        // שחקן 2 - WASD + SPACE
         switch (key) {
             case KeyEvent.VK_W:
                 cursor2.moveUp();
@@ -111,23 +89,32 @@ public class BoardPanel extends JPanel {
             case KeyEvent.VK_D:
                 cursor2.moveRight();
                 break;
-
             case KeyEvent.VK_SPACE:
-                System.out.println("Player 2 pressed SPACE");
-                if (game != null) {
-                    game.handleSelection(game.getPlayer2());
-                }
+                if (onPlayer2Action != null)
+                    onPlayer2Action.accept(null);
                 break;
         }
 
         repaint();
     }
 
+    public void setOnPlayer1Action(Consumer<Void> handler) {
+        this.onPlayer1Action = handler;
+    }
+
+    public void setOnPlayer2Action(Consumer<Void> handler) {
+        this.onPlayer2Action = handler;
+    }
+
+    public void updateAll() {
+        if (board != null)
+            board.updateAll();
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // ציור הלוח
         if (boardImage != null) {
             g.drawImage(boardImage, 0, 0, getWidth(), getHeight(), this);
         } else {
@@ -135,17 +122,10 @@ public class BoardPanel extends JPanel {
             g.fillRect(0, 0, getWidth(), getHeight());
         }
 
-        // ציור הכלים
         if (board != null)
-            board.drawAll(g, getWidth(), getHeight());
+            BoardRenderer.draw(g, board, getWidth(), getHeight());
 
-        // ציור הקורסורים (הריבועים) על הלוח
         if (cursor1 != null) cursor1.draw(g, getWidth(), getHeight());
         if (cursor2 != null) cursor2.draw(g, getWidth(), getHeight());
-    }
-
-    public void updateAll() {
-        if (board != null)
-            board.updateAll();
     }
 }
