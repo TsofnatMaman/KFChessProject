@@ -45,10 +45,25 @@ public class Game {
     }
 
     public void handleSelection(Player player) {
-        int[] selected = player.getCursor().getPosition();
         int[] previous = player.getPendingFrom();
+        int[] selected = player.getCursor().getPosition();
 
         if (previous == null) {
+            List<List<Integer>> rowsOfPlayer = List.of(
+                    List.of(0, 1), // שחקן 0
+                    List.of(6, 7)  // שחקן 1
+            );
+
+            String pieceId = board.getPiece(selected[0], selected[1]).getId();
+
+            // שליפת הקידומת של ה־ID כדי לדעת של מי החייל
+            int ownerCode = Character.getNumericValue(pieceId.charAt(0));
+
+            // בדיקה אם החייל שייך לשחקן הנוכחי
+            if (!rowsOfPlayer.get(player.getId()).contains(ownerCode)) {
+                return;
+            }
+
             if (board.hasPiece(player.getCursor().getRow(), player.getCursor().getCol()))
                 player.setPendingFrom(selected);
             else

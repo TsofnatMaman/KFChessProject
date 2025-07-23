@@ -18,7 +18,10 @@ public class Main {
             PlayerCursor pc1 = new PlayerCursor(0,0, Color.RED);
             PlayerCursor pc2 = new PlayerCursor(7,7,Color.BLUE);
 
-            frame.setContentPane(new GameView(new Game(Board.loadFromCSV(8,8), pc1, pc2))); // מכניס את המשחק
+            GameView gameView = new GameView(new Game(Board.loadFromCSV(8,8), pc1, pc2));
+            gameView.run();
+
+            frame.setContentPane(gameView); // מכניס את המשחק
             frame.pack();
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);

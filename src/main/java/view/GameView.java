@@ -25,11 +25,11 @@ public class GameView extends JPanel {
 
         SwingUtilities.invokeLater(() -> boardPanel.requestFocusInWindow());
 
-        startGameLoop();
+//        startGameLoop();
     }
 
 
-    private void startGameLoop() {
+    public void run() {//        startGameLoop();
         Timer timer = new Timer(16, e -> {
             model.update();            // עדכון הלוגיקה
             boardPanel.updateAll();    // עדכון גרפיקה (תנועה/אנימציה)

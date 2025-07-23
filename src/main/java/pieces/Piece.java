@@ -3,22 +3,35 @@ package pieces;
 import state.State;
 
 import java.awt.geom.Point2D;
+import java.io.IOException;
 import java.util.Map;
 
 public class Piece {
+    private final String id;
+    private final String type;
     private Map<String, State> states;  // כל הסטייטים של הכלי
     private String currentStateName;    // השם של הסטייט הנוכחי
     private State currentState;
 
+    private final Moves moves;
+
     private int row;  // מיקום הלוח (שורה)
     private int col;  // מיקום הלוח (עמודה)
 
-    public Piece(Map<String, State> states, String initialState, int row, int col) {
+    public Piece(String type, Map<String, State> states, String initialState, int row, int col) throws IOException {
+        id = row+","+col;
         this.states = states;
         this.currentStateName = initialState;
         this.currentState = states.get(initialState);
         this.row = row;
         this.col = col;
+        this.type = type;
+
+        moves = new Moves(type);
+    }
+
+    public String getId() {
+        return id;
     }
 
     public void setState(String newStateName) {
@@ -100,5 +113,9 @@ public class Piece {
 
     public Point2D.Double getCurrentPixelPosition() {
         return currentState.getCurrentPosition();
+    }
+
+    public Moves getMoves() {
+        return moves;
     }
 }

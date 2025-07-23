@@ -7,6 +7,7 @@ import state.PhysicsData;
 import state.GraphicsData;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,8 +47,8 @@ class PieceTest {
     }
 
     @Test
-    void testInitialState() {
-        Piece piece = new Piece(states, "idle", 2, 3);
+    void testInitialState() throws IOException {
+        Piece piece = new Piece("", states, "idle", 2, 3);
         assertEquals("idle", piece.getCurrentStateName());
         assertEquals(mockStateIdle, piece.getCurrentState());
         assertEquals(2, piece.getRow());
@@ -55,8 +56,8 @@ class PieceTest {
     }
 
     @Test
-    void testSetState_changesState() {
-        Piece piece = new Piece(states, "idle", 2, 3);
+    void testSetState_changesState() throws IOException {
+        Piece piece = new Piece("",states, "idle", 2, 3);
 
         piece.setState("move");
         assertEquals("move", piece.getCurrentStateName());
@@ -67,8 +68,8 @@ class PieceTest {
     }
 
     @Test
-    void testSetState_noChangeIfSameState() {
-        Piece piece = new Piece(states, "idle", 2, 3);
+    void testSetState_noChangeIfSameState() throws IOException {
+        Piece piece = new Piece("",states, "idle", 2, 3);
         piece.setState("idle"); // אותו מצב
 
         // לא אמור לקרוא ל-reset כי זה אותו מצב
@@ -76,8 +77,8 @@ class PieceTest {
     }
 
     @Test
-    void testUpdateMovementFinished_updatesPositionAndState() {
-        Piece piece = new Piece(states, "idle", 1, 1);
+    void testUpdateMovementFinished_updatesPositionAndState() throws IOException {
+        Piece piece = new Piece("",states, "idle", 1, 1);
 
         when(mockStateIdle.isMovementFinished()).thenReturn(true);
         when(mockStateIdle.getTargetRow()).thenReturn(4);
@@ -94,8 +95,8 @@ class PieceTest {
     }
 
     @Test
-    void testUpdateAnimationFinished_switchesState() {
-        Piece piece = new Piece(states, "idle", 0, 0);
+    void testUpdateAnimationFinished_switchesState() throws IOException {
+        Piece piece = new Piece("",states, "idle", 0, 0);
 
         when(mockStateIdle.isMovementFinished()).thenReturn(false);
         when(mockGraphics.isAnimationFinished()).thenReturn(true);
@@ -107,8 +108,8 @@ class PieceTest {
     }
 
     @Test
-    void testMove_invokesMoveStateReset() {
-        Piece piece = new Piece(states, "idle", 0, 0);
+    void testMove_invokesMoveStateReset() throws IOException {
+        Piece piece = new Piece("",states, "idle", 0, 0);
         int[] destination = new int[]{3,3};
 
         piece.move(destination);
@@ -118,10 +119,10 @@ class PieceTest {
     }
 
     @Test
-    void testMove_noMoveState_logsError() {
+    void testMove_noMoveState_logsError() throws IOException {
         Map<String, State> singleState = new HashMap<>();
         singleState.put("idle", mockStateIdle);
-        Piece piece = new Piece(singleState, "idle", 0, 0);
+        Piece piece = new Piece("",singleState, "idle", 0, 0);
 
         // ננסה לקרוא ל move, אבל אין מצב כזה
         piece.move(new int[]{2,2});

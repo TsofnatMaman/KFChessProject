@@ -6,6 +6,7 @@ import pieces.PiecesFactory;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 
 public class Board {
     private final Piece[][] board;
@@ -70,6 +71,18 @@ public class Board {
         return board[row][col];
     }
 
+    public int getPlayerOf(int i, int j){
+        List<List<Integer>> rowsOfPlayer = List.of(
+                List.of(0, 1), // שחקן 0
+                List.of(6, 7)  // שחקן 1
+        );
+
+        String pieceId = getPiece(i, j).getId();
+        if(rowsOfPlayer.get(0).contains(pieceId.charAt(0)))
+            return 0;
+        else return 1;
+    }
+
     public void move(int[] from, int[] to) {
         if (!isInBounds(from[0], from[1]) || !isInBounds(to[0], to[1])) return;
 
@@ -100,5 +113,27 @@ public class Board {
 
     private boolean isInBounds(int row, int col) {
         return row >= 0 && row < ROWS && col >= 0 && col < COLS;
+    }
+
+    public boolean isMoveLegal(int[]from, int[]to){
+        if(getPiece(to[0],to[1]) != null && getPlayerOf(from[0], from[1]) == getPlayerOf(to[0], to[1]))
+            return false;
+
+        Piece fromPiec = getPiece(from[0], from[1]);
+        List<int[]> moves= fromPiec.getMoves().getMoves();
+
+        boolean isLegal = false;
+
+        for(int[] step : moves)
+            if(from[0]+step[0] == to[0] && from[1]+step[1] == to[1]){
+                isLegal = true;
+                break;
+            }
+
+        System.out.println(getPiece(from[0], from[1]).getCurrentStateName());
+        if(getPiece(from[0], from[1]).getCurrentStateName().contains("rest"))
+            return false;
+        return isLegal;
+
     }
 }

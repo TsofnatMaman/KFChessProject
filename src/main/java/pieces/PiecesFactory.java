@@ -69,7 +69,7 @@ public class PiecesFactory {
 
             // שלב 3 – צור את ה-Piece עם המצב הראשון כברירת מחדל
             String initialState = "idle";
-            return new Piece(states, initialState, row, col);
+            return new Piece(code, states, initialState, row, col);
 
         } catch (Exception e) {
             e.printStackTrace();
