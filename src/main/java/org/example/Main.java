@@ -18,7 +18,12 @@ public class Main {
             PlayerCursor pc1 = new PlayerCursor(0,0, Color.RED);
             PlayerCursor pc2 = new PlayerCursor(7,7,Color.BLUE);
 
-            GameView gameView = new GameView(new Game(Board.loadFromCSV(8,8), pc1, pc2));
+            Game game = new Game(Board.loadFromCSV(8,8), pc1, pc2);
+            GameView gameView = new GameView(game);
+            
+            // Add debug prints
+            System.out.println("Debug: Initial game state setup");
+            
             gameView.run();
 
             frame.setContentPane(gameView); // מכניס את המשחק

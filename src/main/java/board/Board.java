@@ -71,14 +71,13 @@ public class Board {
         return board[row][col];
     }
 
-    public int getPlayerOf(int i, int j){
+    public int getPlayerOf(int row){
         List<List<Integer>> rowsOfPlayer = List.of(
                 List.of(0, 1), // שחקן 0
                 List.of(6, 7)  // שחקן 1
         );
 
-        String pieceId = getPiece(i, j).getId();
-        if(rowsOfPlayer.get(0).contains(pieceId.charAt(0)))
+        if(rowsOfPlayer.get(0).contains(row))
             return 0;
         else return 1;
     }
@@ -116,7 +115,7 @@ public class Board {
     }
 
     public boolean isMoveLegal(int[]from, int[]to){
-        if(getPiece(to[0],to[1]) != null && getPlayerOf(from[0], from[1]) == getPlayerOf(to[0], to[1]))
+        if(getPiece(to[0],to[1]) != null && getPlayerOf(from[0]) == getPlayerOf(to[0]))
             return false;
 
         Piece fromPiec = getPiece(from[0], from[1]);
@@ -130,10 +129,21 @@ public class Board {
                 break;
             }
 
-        System.out.println(getPiece(from[0], from[1]).getCurrentStateName());
         if(getPiece(from[0], from[1]).getCurrentStateName().contains("rest"))
             return false;
         return isLegal;
 
     }
+
+    public boolean isJumpLegal(Piece p){
+        if(p.getCurrentStateName().contains("rest"))
+            return false;
+        return true;
+    }
+
+    public void jump(Piece p){
+        if (p == null) return;
+        p.jump();
+    }
+
 }

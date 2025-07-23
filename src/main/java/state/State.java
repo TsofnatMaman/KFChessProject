@@ -4,18 +4,20 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 
 public class State {
+    private String name;
     private PhysicsData physics;
     private GraphicsData graphics;
 
     private int startRow, startCol;
     private int targetRow, targetCol;
     private long startTimeNanos;
-    private int tileSize;
+    private final int tileSize;
 
     private double currentX, currentY;
 
-    public State(int startRow, int startCol, int targetRow, int targetCol,
+    public State(String name, int startRow, int startCol, int targetRow, int targetCol,
                  int tileSize, PhysicsData physics, GraphicsData graphics) {
+        this.name = name;
         this.startRow = startRow;
         this.startCol = startCol;
         this.targetRow = targetRow;
@@ -31,6 +33,7 @@ public class State {
             this.targetRow = to[0];
             this.targetCol = to[1];
         }
+
         this.currentX = startCol * tileSize;
         this.currentY = startRow * tileSize;
         this.startTimeNanos = System.nanoTime();
@@ -46,7 +49,7 @@ public class State {
         if (graphics != null) graphics.update();
         if (physics != null) physics.update();
 
-        if (isMovementFinished()){
+        if (isActionFinished()){
             startRow = targetRow;
             startCol = targetCol;
         }
@@ -72,7 +75,7 @@ public class State {
         currentY = (startRow * tileSize) + dy * t;
     }
 
-    public boolean isMovementFinished() {
+    private boolean isMovementFinished() {
         if (physics == null) return true;
 
         double speed = physics.getSpeedMetersPerSec();
@@ -85,6 +88,34 @@ public class State {
 
         double distanceSoFar = speed * elapsedSec;
         return distanceSoFar >= totalDistance;
+    }
+
+    public boolean isActionFinished() {
+        switch (name) {
+            case "move":
+                return isMovementFinished();
+            case "jump":
+                boolean finished = graphics != null && graphics.isAnimationFinished();
+                if (finished) {
+                    System.out.println("Jump animation finished, transitioning to: " + physics.getNextStateWhenFinished());
+                }
+                return finished;
+            case "short_rest":
+            case "long_rest":
+                boolean restFinished = graphics != null && graphics.isAnimationFinished();
+                if (restFinished) {
+                    System.out.println(name + " animation finished");
+                }
+                return restFinished;
+            default:
+                // כברירת מחדל, אם יש פיזיקה - נבדוק לפי תנועה, אחרת לפי אנימציה
+                if (physics != null)
+                    return isMovementFinished();
+                else if (graphics != null)
+                    return graphics.isAnimationFinished();
+                else
+                    return true;
+        }
     }
 
     public Point2D.Double getCurrentPosition() {
@@ -117,9 +148,5 @@ public class State {
 
     public GraphicsData getGraphics() {
         return graphics;
-    }
-
-    public int getTileSize() {
-        return tileSize;
     }
 }

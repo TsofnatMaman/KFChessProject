@@ -23,7 +23,7 @@ public class StateTest {
         graphics = new GraphicsData(new java.awt.image.BufferedImage[1], 1, true);
 
         // מצב התחלתי בשורה 0, עמודה 0, יעד לשורה 1, עמודה 0
-        state = new State(0, 0, 1, 0, TILE_SIZE, physics, graphics);
+        state = new State("",0, 0, 1, 0, TILE_SIZE, physics, graphics);
     }
 
     @Test
@@ -65,7 +65,7 @@ public class StateTest {
         assertEquals(0, pos.getY(), 0.1);
 
         // מצב התנועה אמור להסתיים
-        assertTrue(state.isMovementFinished());
+        assertTrue(state.isActionFinished());
     }
 
     @Test

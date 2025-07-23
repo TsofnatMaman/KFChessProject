@@ -42,6 +42,9 @@ public class Piece {
             // העבר את המיקום הנוכחי כדי שלא יאתחל למיקום לא נכון
             int[] pos = new int[]{this.row, this.col};
             currentState.reset(newStateName, pos);
+        } else if (!states.containsKey(newStateName)) {
+            // טיפול במקרה שאין סטייט כזה - רק הדפסה, לא מעבר ל-idle
+            System.err.println("State '" + newStateName + "' not found!");
         }
     }
 
@@ -52,8 +55,7 @@ public class Piece {
     public void update() {
         currentState.update();
 
-        // אם התנועה הסתיימה, עדכן את המיקום הלוגי ועבור לסטייט הבא
-        if (currentState.isMovementFinished()) {
+        if (currentState.isActionFinished()) {
             this.row = currentState.getTargetRow();
             this.col = currentState.getTargetCol();
 
@@ -77,6 +79,16 @@ public class Piece {
             currentState.reset("move", to);
         } else {
             System.err.println("Missing 'move' state!");
+        }
+    }
+
+    public void jump(){
+        if (states.containsKey("jump")) {
+            currentStateName = "jump";
+            currentState = states.get("jump");
+            currentState.reset("jump", new int[]{row, col});
+        } else {
+            System.err.println("Missing 'jump' state!");
         }
     }
 
