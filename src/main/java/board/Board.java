@@ -1,5 +1,6 @@
 package board;
 
+import pieces.Moves;
 import pieces.Piece;
 import pieces.PiecesFactory;
 
@@ -115,16 +116,16 @@ public class Board {
     }
 
     public boolean isMoveLegal(int[]from, int[]to){
-        if(getPiece(to[0],to[1]) != null && getPlayerOf(from[0]) == getPlayerOf(to[0]))
+        if(getPiece(to[0],to[1]) != null && getPlayerOf(getPiece(from[0], from[1]).getId().charAt(0)-'0') == getPlayerOf(getPiece(to[0], to[1]).getId().charAt(0)-'0'))
             return false;
 
         Piece fromPiec = getPiece(from[0], from[1]);
-        List<int[]> moves= fromPiec.getMoves().getMoves();
+        List<Moves.Move> moves= fromPiec.getMoves().getMoves();
 
         boolean isLegal = false;
 
-        for(int[] step : moves)
-            if(from[0]+step[0] == to[0] && from[1]+step[1] == to[1]){
+        for(Moves.Move step : moves)
+            if(from[0]+step.getDx() == to[0] && from[1]+step.getDy() == to[1]){
                 isLegal = true;
                 break;
             }

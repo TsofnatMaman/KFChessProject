@@ -63,13 +63,6 @@ public class PiecesFactory {
                 GraphicsData graphics = new GraphicsData(sprites, fps, isLoop);
                 State state = new State(stateName, row, col, row, col, TILE_SIZE, physics, graphics);
                 states.put(stateName, state);
-
-                System.out.println("טוען מצב: " + stateName);
-                System.out.println("  פריימים נטענו: " + sprites.length);
-                System.out.println("  frames_per_sec: " + fps);
-                System.out.println("  is_loop: " + isLoop);
-                System.out.println("  next_state_when_finished: " + nextState);
-
             }
 
             if (states.isEmpty()) return null;

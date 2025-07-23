@@ -10,9 +10,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Moves {
-    private final List<int[]> moves;
 
-    public List<int[]> getMoves() {
+    public class Move{
+        int dx;
+        int dy;
+
+        Move(int dx, int dy){
+            this.dx = dx;
+            this.dy = dy;
+        }
+
+        public int getDx() {
+            return dx;
+        }
+
+        public int getDy() {
+            return dy;
+        }
+    }
+
+    private final List<Move> moves;
+
+    public List<Move> getMoves() {
         return moves;
     }
 
@@ -32,7 +51,7 @@ public class Moves {
                     if (parts.length == 2) {
                         int dx = Integer.parseInt(parts[0]);
                         int dy = Integer.parseInt(parts[1]);
-                        moves.add(new int[]{dx, dy});
+                        moves.add(new Move(dx, dy));
                     }
                 }
             }
