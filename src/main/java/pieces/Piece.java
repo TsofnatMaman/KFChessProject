@@ -4,6 +4,7 @@ import state.State;
 
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 public class Piece {
@@ -18,8 +19,10 @@ public class Piece {
     private int row;  // מיקום הלוח (שורה)
     private int col;  // מיקום הלוח (עמודה)
 
+    private boolean wasCaptured = false;
+
     public Piece(String type, Map<String, State> states, String initialState, int row, int col) throws IOException {
-        id = row+","+col;
+        id = row + "," + col;
         this.states = states;
         this.currentStateName = initialState;
         this.currentState = states.get(initialState);
@@ -30,8 +33,24 @@ public class Piece {
         moves = new Moves(type);
     }
 
+    public int getPlayer() {
+        List<List<Integer>> rowsOfPlayer = List.of(
+                List.of(0, 1), // שחקן 0
+                List.of(6, 7)  // שחקן 1
+        );
+
+        if (rowsOfPlayer.get(0).contains(Integer.parseInt(getId().charAt(0)+"")))
+            return 0;
+        else
+            return 1;
+    }
+
     public String getId() {
         return id;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public void setState(String newStateName) {
@@ -43,7 +62,6 @@ public class Piece {
             int[] pos = new int[]{this.row, this.col};
             currentState.reset(newStateName, pos);
         } else if (!states.containsKey(newStateName)) {
-            // טיפול במקרה שאין סטייט כזה - רק הדפסה, לא מעבר ל-idle
             System.err.println("State '" + newStateName + "' not found!");
         }
     }
@@ -56,21 +74,31 @@ public class Piece {
         currentState.update();
 
         if (currentState.isActionFinished()) {
+            // עדכון המיקום הלוגי רק אחרי שהפעולה הסתיימה
             this.row = currentState.getTargetRow();
             this.col = currentState.getTargetCol();
 
             String nextState = currentState.getPhysics().getNextStateWhenFinished();
+
+            // נעדכן את הסטייט הבא כמו שהוא בלי להחליף ל-idle מיד
             setState(nextState);
-            return; // עצור כאן כדי לא לעבור שוב סטייט בפעם אחת
+            return; // עצור כדי לא לעבור שוב סטייט בפעם אחת
         }
 
-        // מעבר אוטומטי לסטייט הבא אם האנימציה לא לולאה והסתיימה
-        if (currentState.getGraphics() != null
-                && currentState.getGraphics().isAnimationFinished()) {
+        // מעבר אוטומטי אם האנימציה הסתיימה
+        if (currentState.getGraphics() != null && currentState.getGraphics().isAnimationFinished()) {
             String nextState = currentState.getPhysics().getNextStateWhenFinished();
-            setState(nextState);
+
+            // אם הסטייט הבא הוא מנוחה - נחליף ל-idle כדי לאפשר תנועה
+            if ("short_rest".equals(nextState) || "long_rest".equals(nextState)) {
+                setState("idle");
+            } else {
+                setState(nextState);
+            }
         }
     }
+
+
 
     public void move(int[] to) {
         if (states.containsKey("move")) {
@@ -82,7 +110,7 @@ public class Piece {
         }
     }
 
-    public void jump(){
+    public void jump() {
         if (states.containsKey("jump")) {
             currentStateName = "jump";
             currentState = states.get("jump");
@@ -92,24 +120,18 @@ public class Piece {
         }
     }
 
-//    public void draw(Graphics g, int x, int y, int width, int height) {
-//        BufferedImage sprite = currentState.getGraphics().getCurrentFrame();
-//        if (sprite == null) return;
-//
-//        if (currentStateName.equals("move")) {
-//            // בזמן תנועה - המר את המיקום הפיקסלי למערכת הקואורדינטות האמיתית
-//            Point2D.Double pos = getCurrentPixelPosition();
-//
-//            // המר מ-TILE_SIZE=64 לגודל המשבצת האמיתי
-//            double realX = (pos.getX() / 64.0) * width;
-//            double realY = (pos.getY() / 64.0) * height;
-//
-//            g.drawImage(sprite, (int) realX, (int) realY, width, height, null);
-//        } else {
-//            // כשלא בתנועה - השתמש במיקום המדויק של המשבצת
-//            g.drawImage(sprite, x, y, width, height, null);
-//        }
-//    }
+    public boolean isCaptured() {
+        return wasCaptured;
+    }
+
+    public void markCaptured() {
+        this.wasCaptured = true;
+    }
+
+    public void setLogicalPosition(int row, int col) {
+        this.row = row;
+        this.col = col;
+    }
 
     public int getRow() {
         return row;
@@ -129,5 +151,9 @@ public class Piece {
 
     public Moves getMoves() {
         return moves;
+    }
+
+    public Map<String, State> getStates() {
+        return states;
     }
 }

@@ -17,6 +17,7 @@ public class MoveCommand implements ICommand {
     @Override
     public void execute() {
         if (!board.isMoveLegal(from, to)) {
+            boolean b= board.isMoveLegal(from, to);
             System.err.println("Illegal move from " + Arrays.toString(from) + " to " + Arrays.toString(to));
             return;
         }

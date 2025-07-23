@@ -118,6 +118,14 @@ public class State {
         }
     }
 
+    public int getStartCol() {
+        return startCol;
+    }
+
+    public int getStartRow() {
+        return startRow;
+    }
+
     public Point2D.Double getCurrentPosition() {
         return new Point2D.Double(currentX, currentY);
     }
