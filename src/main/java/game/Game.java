@@ -4,6 +4,7 @@ import board.Board;
 import command.ICommand;
 import command.JumpCommand;
 import command.MoveCommand;
+import pieces.Piece;
 import player.Player;
 import player.PlayerCursor;
 
@@ -50,8 +51,10 @@ public class Game {
         int[] selected = player.getCursor().getPosition();
 
         if (previous == null) {
+
             // בדיקה אם החייל שייך לשחקן הנוכחי
-            if (board.getPlayerOf(selected[0]) != player.getId()) {
+            int piecesIdR = Integer.parseInt(board.getPiece(selected[0], selected[1]).getId().charAt(0)+"");
+            if (board.getPlayerOf(piecesIdR) != player.getId()) {
                 return;
             }
 

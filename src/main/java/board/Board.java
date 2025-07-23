@@ -129,14 +129,17 @@ public class Board {
                 break;
             }
 
-        if(getPiece(from[0], from[1]).getCurrentStateName().contains("rest"))
+        // בודקים אם הכלי במצב short_rest או long_rest
+        String currentState = getPiece(from[0], from[1]).getCurrentStateName();
+        if(currentState.equals("short_rest") || currentState.equals("long_rest"))
             return false;
         return isLegal;
 
     }
 
     public boolean isJumpLegal(Piece p){
-        if(p.getCurrentStateName().contains("rest"))
+        String currentState = p.getCurrentStateName();
+        if(currentState.equals("short_rest") || currentState.equals("long_rest"))
             return false;
         return true;
     }
