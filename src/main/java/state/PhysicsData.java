@@ -1,35 +1,39 @@
-package state;
+    package state;
 
-public class PhysicsData {
-    private double speedMetersPerSec;
-    private String nextStateWhenFinished;
+    import interfaces.EState;
+    import interfaces.IPhysicsData;
+    import pieces.Position;
 
-    public PhysicsData(double speedMetersPerSec, String nextStateWhenFinished) {
-        this.speedMetersPerSec = speedMetersPerSec;
-        this.nextStateWhenFinished = nextStateWhenFinished;
+    public class PhysicsData implements IPhysicsData {
+        private double speedMetersPerSec;
+        private EState nextStateWhenFinished;
+
+        public PhysicsData(double speedMetersPerSec, EState nextStateWhenFinished) {
+            this.speedMetersPerSec = speedMetersPerSec;
+            this.nextStateWhenFinished = nextStateWhenFinished;
+        }
+
+        public double getSpeedMetersPerSec() {
+            return speedMetersPerSec;
+        }
+
+        public void setSpeedMetersPerSec(double speedMetersPerSec) {
+            this.speedMetersPerSec = speedMetersPerSec;
+        }
+
+        public EState getNextStateWhenFinished() {
+            return nextStateWhenFinished;
+        }
+
+        public void setNextStateWhenFinished(EState nextStateWhenFinished) {
+            this.nextStateWhenFinished = nextStateWhenFinished;
+        }
+
+        public void reset(EState state, Position to) {
+            // במידת הצורך לאתחול פרטי
+        }
+
+        public void update() {
+            // אין צורך כרגע – אבל יכול לשמש לאפקטים פיזיקליים מתקדמים
+        }
     }
-
-    public double getSpeedMetersPerSec() {
-        return speedMetersPerSec;
-    }
-
-    public void setSpeedMetersPerSec(double speedMetersPerSec) {
-        this.speedMetersPerSec = speedMetersPerSec;
-    }
-
-    public String getNextStateWhenFinished() {
-        return nextStateWhenFinished;
-    }
-
-    public void setNextStateWhenFinished(String nextStateWhenFinished) {
-        this.nextStateWhenFinished = nextStateWhenFinished;
-    }
-
-    public void reset(String state, int[] to) {
-        // במידת הצורך לאתחול פרטי
-    }
-
-    public void update() {
-        // אין צורך כרגע – אבל יכול לשמש לאפקטים פיזיקליים מתקדמים
-    }
-}

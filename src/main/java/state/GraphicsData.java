@@ -1,8 +1,12 @@
 package state;
 
+import interfaces.EState;
+import interfaces.IGraphicsData;
+import pieces.Position;
+
 import java.awt.image.BufferedImage;
 
-public class GraphicsData {
+public class GraphicsData implements IGraphicsData {
     private BufferedImage[] frames;
     private int totalFrames;
     private int currentFrame;
@@ -19,7 +23,7 @@ public class GraphicsData {
         this.lastFrameTimeNanos = System.nanoTime();
     }
 
-    public void reset(String state, int[] to) {
+    public void reset(EState state, Position to) {
         // אפס רק כשעוברים לסטייט חדש
         this.currentFrame = 0;
         this.lastFrameTimeNanos = System.nanoTime();

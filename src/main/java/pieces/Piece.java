@@ -1,38 +1,38 @@
 package pieces;
 
-import state.State;
+import interfaces.*;
 
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public class Piece {
+public class Piece implements IPiece {
     private final String id;
     private final String type;
-    private Map<String, State> states;  // כל הסטייטים של הכלי
-    private String currentStateName;    // השם של הסטייט הנוכחי
-    private State currentState;
+    private Map<EState, IState> states;
+    private EState currentStateName;
+    private IState currentState;
 
     private final Moves moves;
 
-    private int row;  // מיקום הלוח (שורה)
-    private int col;  // מיקום הלוח (עמודה)
+    private Position pos;
 
     private boolean wasCaptured = false;
 
-    public Piece(String type, Map<String, State> states, String initialState, int row, int col) throws IOException {
-        id = row + "," + col;
+    public Piece(String type, Map<EState, IState> states, EState initialState, Position pos) throws IOException {
+        id = pos.getR() + "," + pos.getC();
         this.states = states;
         this.currentStateName = initialState;
         this.currentState = states.get(initialState);
-        this.row = row;
-        this.col = col;
+        this.pos = pos;
+
         this.type = type;
 
         moves = new Moves(type);
     }
 
+    @Override
     public int getPlayer() {
         List<List<Integer>> rowsOfPlayer = List.of(
                 List.of(0, 1), // שחקן 0
@@ -45,40 +45,44 @@ public class Piece {
             return 1;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public String getType() {
         return type;
     }
 
-    public void setState(String newStateName) {
+    @Override
+    public void setState(EState newStateName) {
         if (states.containsKey(newStateName) && !newStateName.equals(currentStateName)) {
             currentStateName = newStateName;
             currentState = states.get(newStateName);
 
-            // העבר את המיקום הנוכחי כדי שלא יאתחל למיקום לא נכון
-            int[] pos = new int[]{this.row, this.col};
-            currentState.reset(newStateName, pos);
+            // Update state.startPos before reset
+            currentState.reset(newStateName, pos, pos);
         } else if (!states.containsKey(newStateName)) {
             System.err.println("State '" + newStateName + "' not found!");
         }
     }
 
-    public State getCurrentState() {
+
+    @Override
+    public IState getCurrentState() {
         return currentState;
     }
 
+    @Override
     public void update() {
         currentState.update();
 
         if (currentState.isActionFinished()) {
             // עדכון המיקום הלוגי רק אחרי שהפעולה הסתיימה
-            this.row = currentState.getTargetRow();
-            this.col = currentState.getTargetCol();
+            pos = new Position(currentState.getTargetRow(), currentState.getTargetCol());
 
-            String nextState = currentState.getPhysics().getNextStateWhenFinished();
+            EState nextState = currentState.getPhysics().getNextStateWhenFinished();
 
             // נעדכן את הסטייט הבא כמו שהוא בלי להחליף ל-idle מיד
             setState(nextState);
@@ -87,11 +91,11 @@ public class Piece {
 
         // מעבר אוטומטי אם האנימציה הסתיימה
         if (currentState.getGraphics() != null && currentState.getGraphics().isAnimationFinished()) {
-            String nextState = currentState.getPhysics().getNextStateWhenFinished();
+            EState nextState = currentState.getPhysics().getNextStateWhenFinished();
 
             // אם הסטייט הבא הוא מנוחה - נחליף ל-idle כדי לאפשר תנועה
-            if ("short_rest".equals(nextState) || "long_rest".equals(nextState)) {
-                setState("idle");
+            if (nextState == EState.SHORT_REST || nextState == EState.LONG_REST) {
+                setState(EState.IDLE);
             } else {
                 setState(nextState);
             }
@@ -99,61 +103,70 @@ public class Piece {
     }
 
 
-
-    public void move(int[] to) {
-        if (states.containsKey("move")) {
-            currentStateName = "move";
-            currentState = states.get("move");
-            currentState.reset("move", to);
+    @Override
+    public void move(Position to) {
+        if (states.containsKey(EState.MOVE)) {
+            currentStateName = EState.MOVE;
+            currentState = states.get(EState.MOVE);
+            currentState.reset(EState.MOVE, pos, to);
         } else {
             System.err.println("Missing 'move' state!");
         }
     }
 
+    @Override
     public void jump() {
-        if (states.containsKey("jump")) {
-            currentStateName = "jump";
-            currentState = states.get("jump");
-            currentState.reset("jump", new int[]{row, col});
+        if (states.containsKey(EState.JUMP)) {
+            currentStateName = EState.JUMP;
+            currentState = states.get(EState.JUMP);
+            currentState.reset(EState.JUMP,pos, pos);
         } else {
             System.err.println("Missing 'jump' state!");
         }
     }
 
+    @Override
     public boolean isCaptured() {
         return wasCaptured;
     }
 
+    @Override
     public void markCaptured() {
         this.wasCaptured = true;
     }
 
-    public void setLogicalPosition(int row, int col) {
-        this.row = row;
-        this.col = col;
+    @Override
+    public void setLogicalPosition(Position pos) {
+        this.pos = pos;
     }
 
+    @Override
     public int getRow() {
-        return row;
+        return pos.getR();
     }
 
+    @Override
     public int getCol() {
-        return col;
+        return pos.getC();
     }
 
-    public String getCurrentStateName() {
+    @Override
+    public EState getCurrentStateName() {
         return currentStateName;
     }
 
+    @Override
     public Point2D.Double getCurrentPixelPosition() {
         return currentState.getCurrentPosition();
     }
 
+    @Override
     public Moves getMoves() {
         return moves;
     }
 
-    public Map<String, State> getStates() {
+    @Override
+    public Map<EState, IState> getStates() {
         return states;
     }
 }

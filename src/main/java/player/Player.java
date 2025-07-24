@@ -1,25 +1,26 @@
 package player;
 
+import board.BoardConfig;
+import interfaces.*;
 import game.LoadPieces;
-import pieces.Piece;
-import pieces.PiecesFactory;
+import pieces.Position;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static board.Board.linesForPlayer;
 
-public class Player {
+public class Player implements IPlayer{
     private final int id;
-    private final PlayerCursor cursor;
-    private int[] pending;
+    private final IPlayerCursor cursor;
+    private Position pending;
     private static int mone=0;
 
-    private final List<Piece> pieces;
+    private final List<IPiece> pieces;
 
     private boolean isfailed;
 
-    public Player(PlayerCursor pc){
+    public Player(IPlayerCursor pc, BoardConfig bc){
         id = mone++;
         this.cursor = pc;
         pending=null;
@@ -29,11 +30,11 @@ public class Player {
 
         for(int i:linesForPlayer[id])
             for(int j=0; j<8; j++)
-                this.pieces.add(PiecesFactory.createPieceByCode(LoadPieces.board[i][j],i,j));
+                this.pieces.add(PiecesFactory.createPieceByCode(LoadPieces.board[i][j],new Position(i, j), bc));
 
     }
 
-    public List<Piece> getPieces() {
+    public List<IPiece> getPieces() {
         return pieces;
     }
 
@@ -41,22 +42,23 @@ public class Player {
         return id;
     }
 
-    public PlayerCursor getCursor() {
+    public IPlayerCursor getCursor() {
         return cursor;
     }
 
-    public int[] getPendingFrom() {
+    public Position getPendingFrom() {
         return pending;
     }
 
-    public void setPendingFrom(int[] pending) {
-        this.pending = pending;
+    public void setPendingFrom(Position pending) {
+        this.pending = pending == null? null : pending.copy();
     }
-    public boolean isfailed(){
+
+    public boolean isFailed(){
         return isfailed;
     }
 
-    public void markPieceCaptured(Piece p){
+    public void markPieceCaptured(IPiece p){
         if(p.getType().charAt(0) == 'K')
             isfailed = true;
     }

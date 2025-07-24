@@ -1,5 +1,7 @@
 package view;
 
+import interfaces.*;
+
 import board.Board;
 import board.BoardRenderer;
 import player.PlayerCursor;
@@ -16,15 +18,15 @@ import java.util.function.Consumer;
 
 public class BoardPanel extends JPanel {
     private BufferedImage boardImage;
-    private final Board board;
+    private final IBoard board;
 
-    private final PlayerCursor cursor1;
-    private final PlayerCursor cursor2;
+    private final IPlayerCursor cursor1;
+    private final IPlayerCursor cursor2;
 
     private Consumer<Void> onPlayer1Action;
     private Consumer<Void> onPlayer2Action;
 
-    public BoardPanel(Board board, PlayerCursor pc1, PlayerCursor pc2) {
+    public BoardPanel(IBoard board, IPlayerCursor pc1, IPlayerCursor pc2) {
         this.board = board;
         this.cursor1 = pc1;
         this.cursor2 = pc2;

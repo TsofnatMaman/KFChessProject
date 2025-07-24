@@ -1,5 +1,7 @@
 package graphics;
 
+import interfaces.EState;
+
 import javax.imageio.ImageIO;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -13,7 +15,7 @@ public class GraphicsLoader {
     /**
      * טוען תמונה אחת לפי כלי, מצב, ואינדקס פריים (1-based)
      */
-    public static BufferedImage loadSprite(String pieceType, String stateName, int frameIndex) {
+    public static BufferedImage loadSprite(String pieceType, EState stateName, int frameIndex) {
         String path = String.format("/pieces/%s/states/%s/sprites/%d.png", pieceType, stateName, frameIndex);
 
         if (cache.containsKey(path)) {
@@ -33,7 +35,7 @@ public class GraphicsLoader {
     /**
      * טוען את כל הפריימים ברצף (1,2,3,...) עד שהקובץ הבא לא קיים
      */
-    public static BufferedImage[] loadAllSprites(String pieceType, String stateName) {
+    public static BufferedImage[] loadAllSprites(String pieceType, EState stateName) {
         List<BufferedImage> sprites = new ArrayList<>();
         int index = 1;
 

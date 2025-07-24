@@ -2,7 +2,10 @@ package org.example;
 
 
 import board.Board;
+import board.BoardConfig;
 import game.Game;
+import interfaces.IPlayer;
+import pieces.Position;
 import player.Player;
 import player.PlayerCursor;
 import view.GameView;
@@ -16,8 +19,10 @@ public class Main {
             JFrame frame = new JFrame("KFChess");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            Player p1 = new Player(new PlayerCursor(0,0, Color.RED));
-            Player p2 = new Player(new PlayerCursor(7,7,Color.BLUE));
+            BoardConfig borderConfig = new BoardConfig(8,8,64*8,64*8);
+
+            IPlayer p1 = new Player(new PlayerCursor(new Position(0,0), Color.RED), borderConfig);
+            IPlayer p2 = new Player(new PlayerCursor(new Position(7,7),Color.BLUE), borderConfig);
 
             Game game = new Game(p1, p2);
             GameView gameView = new GameView(game);

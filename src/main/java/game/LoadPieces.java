@@ -1,8 +1,5 @@
 package game;
 
-import pieces.Piece;
-import pieces.PiecesFactory;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;

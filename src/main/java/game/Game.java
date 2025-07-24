@@ -1,22 +1,23 @@
 package game;
 
 import board.Board;
-import command.ICommand;
+import interfaces.ICommand;
 import command.JumpCommand;
 import command.MoveCommand;
-import player.Player;
+import interfaces.*;
+import pieces.Position;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Game {
-    private Player player1;
-    private Player player2;
+public class Game implements IGame {
+    private final IPlayer player1;
+    private final IPlayer player2;
     private List<ICommand> commandQueue;
-    private Board board; // הלוח עצמו – מחלקה נפרדת בלוגיקה
+    private final IBoard board; // הלוח עצמו – מחלקה נפרדת בלוגיקה
 
-    public Game(Player player1, Player player2) {
-        this.board = new Board(8,8,new Player[]{ player1, player2 });
+    public Game(IPlayer player1, IPlayer player2) {
+        this.board = new Board(8,8,8,8,new IPlayer[]{ player1, player2 });
         this.player1 = player1;
         this.player2 = player2;
         commandQueue = new ArrayList<>();
@@ -32,26 +33,26 @@ public class Game {
         }
     }
 
-    public Player getPlayer1() {
+    public IPlayer getPlayer1() {
         return player1;
     }
 
-    public Player getPlayer2() {
+    public IPlayer getPlayer2() {
         return player2;
     }
 
-    public Board getBoard() {
+    public IBoard getBoard() {
         return board;
     }
 
-    public void handleSelection(Player player) {
-        int[] previous = player.getPendingFrom();
-        int[] selected = player.getCursor().getPosition();
+    public void handleSelection(IPlayer player) {
+        Position previous = player.getPendingFrom();
+        Position selected = player.getCursor().getPosition();
 
         if (previous == null) {
 
             // בדיקה אם החייל שייך לשחקן הנוכחי
-            int piecesIdR = Integer.parseInt(board.getPiece(selected[0], selected[1]).getId().charAt(0)+"");
+            int piecesIdR = Integer.parseInt(board.getPiece(selected).getId().charAt(0)+"");
             if (board.getPlayerOf(piecesIdR) != player.getId()) {
                 return;
             }
@@ -62,17 +63,17 @@ public class Game {
                 System.err.println("choose isn't piece");
         } else {
             player.setPendingFrom(null);
-            if(previous[0] == selected[0] && previous[1] == selected[1])
-                addCommand(new JumpCommand(getBoard().getPiece(selected[0], selected[1]), board));
+            if(previous.equals(selected))
+                addCommand(new JumpCommand(getBoard().getPiece(selected), board));
             else
-                addCommand(new MoveCommand(previous, selected, board));
+                addCommand(new MoveCommand(previous, selected.copy(), board));
         }
     }
 
     public int win(){
-        if(board.players[0].isfailed())
+        if(board.getPlayers()[0].isFailed())
             return 1;
-        if(board.players[1].isfailed())
+        if(board.getPlayers()[1].isFailed())
             return 0;
         return -1;
     }

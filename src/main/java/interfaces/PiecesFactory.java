@@ -1,11 +1,17 @@
-package pieces;
+package interfaces;
+
+import board.BoardConfig;
+import graphics.GraphicsLoader;
+import interfaces.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import graphics.GraphicsLoader;
-import state.*;
+import pieces.Piece;
+import pieces.Position;
+import state.GraphicsData;
+import state.PhysicsData;
+import state.State;
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
@@ -14,11 +20,14 @@ import java.util.*;
 
 public class PiecesFactory {
 
-    private static final int TILE_SIZE = 64;
+    private static double TILE_SIZE;
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public static Piece createPieceByCode(String code, int row, int col) {
-        Map<String, State> states = new HashMap<>();
+    public static Piece createPieceByCode(String code, Position pos, BoardConfig config) {
+        TILE_SIZE = config.tileSize;
+
+        // ... המשך כפי שכבר בנינו, תוך שימוש ב־tileSize
+        Map<EState, IState> states = new HashMap<>();
         String basePath = "/pieces/" + code + "/states/";
 
         try {
@@ -46,30 +55,30 @@ public class PiecesFactory {
                 JsonNode root = mapper.readTree(is);
                 JsonNode physicsNode = root.path("physics");
                 double speed = physicsNode.path("speed_m_per_sec").asDouble(0.0);
-                String nextState = physicsNode.path("next_state_when_finished").asText(stateName);
+                EState nextState = EState.valueOf(physicsNode.path("next_state_when_finished").asText(stateName).toUpperCase());
 
-                PhysicsData physics = new PhysicsData(speed, nextState);
+                IPhysicsData physics = new PhysicsData(speed, nextState);
 
                 JsonNode graphicsNode = root.path("graphics");
                 int fps = graphicsNode.path("frames_per_sec").asInt(1);
                 boolean isLoop = graphicsNode.path("is_loop").asBoolean(true);
 
-                BufferedImage[] sprites = GraphicsLoader.loadAllSprites(code, stateName);
+                BufferedImage[] sprites = GraphicsLoader.loadAllSprites(code, EState.valueOf(stateName.toUpperCase()));
                 if (sprites.length == 0) {
                     System.err.println("No sprites for state: " + stateName);
                     continue;
                 }
 
-                GraphicsData graphics = new GraphicsData(sprites, fps, isLoop);
-                State state = new State(stateName, row, col, row, col, TILE_SIZE, physics, graphics);
-                states.put(stateName, state);
+                IGraphicsData graphics = new GraphicsData(sprites, fps, isLoop);
+                IState state = new State(stateName, pos, pos, TILE_SIZE, physics, graphics);
+                states.put(EState.valueOf(stateName.toUpperCase()), state);
             }
 
             if (states.isEmpty()) return null;
 
             // שלב 3 – צור את ה-Piece עם המצב הראשון כברירת מחדל
-            String initialState = "idle";
-            return new Piece(code, states, initialState, row, col);
+            EState initialState = EState.IDLE;
+            return new Piece(code, states, initialState, pos);
 
         } catch (Exception e) {
             e.printStackTrace();

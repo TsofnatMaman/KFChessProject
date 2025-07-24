@@ -1,12 +1,13 @@
 package pieces;
 
+import interfaces.IPiece;
+
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
-// מחלקת PieceRenderer.java (בתוך חבילה view/pieces)
 public class PieceRenderer {
-    public static void draw(Graphics g, Piece p, int squareWidth, int squareHeight) {
+    public static void draw(Graphics g, IPiece p, int squareWidth, int squareHeight) {
         BufferedImage frame = p.getCurrentState().getGraphics().getCurrentFrame();
 
         double x = p.getCol();
@@ -18,8 +19,9 @@ public class PieceRenderer {
             y = pos.y / 64.0;
         }
 
-        int pixelX = (int) (x * squareWidth);
-        int pixelY = (int) (y * squareHeight);
+        Point2D.Double pos = p.getCurrentPixelPosition();
+        int pixelX = (int) (pos.x * squareWidth / 64.0);
+        int pixelY = (int) (pos.y * squareHeight / 64.0);
 
         g.drawImage(frame, pixelX, pixelY, squareWidth, squareHeight, null);
     }

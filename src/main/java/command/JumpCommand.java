@@ -1,14 +1,13 @@
 package command;
 
-import board.Board;
-import pieces.Piece;
+import interfaces.*;
 
-public class JumpCommand implements ICommand{
+public class JumpCommand implements ICommand {
 
-    private Piece p;
-    private Board board;
+    private IPiece p;
+    private IBoard board;
 
-    public JumpCommand(Piece p, Board board){
+    public JumpCommand(IPiece p, IBoard board){
         this.p = p;
         this.board = board;
     }

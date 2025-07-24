@@ -1,44 +1,45 @@
 package player;
 
+import interfaces.IPlayerCursor;
+import pieces.Position;
+
 import java.awt.*;
 
-public class PlayerCursor {
-    private int row;
-    private int col;
+public class PlayerCursor implements IPlayerCursor {
+    private Position pos;
     private final Color color;
     public final int ROWS;
     public final int COLS;
 
-    public PlayerCursor(int startRow, int startCol, Color color) {
+    public PlayerCursor(Position pos, Color color) {
         ROWS=8;
         COLS=8;
-        this.row = startRow;
-        this.col = startCol;
+        this.pos = pos;
         this.color = color;
     }
 
     public void moveUp() {
-        if (row > 0) row--;
+        if (pos.getR() > 0) pos.reduceOneRow();
     }
 
     public void moveDown() {
-        if (row < ROWS-1) row++;
+        if (pos.getR() < ROWS-1) pos.addOneRow();
     }
 
     public void moveLeft() {
-        if (col > 0) col--;
+        if (pos.getC() > 0) pos.reduceOneCol();
     }
 
     public void moveRight() {
-        if (col < COLS-1) col++;
+        if (pos.getC() < COLS-1) pos.addOneCol();
     }
 
     public void draw(Graphics g, int panelWidth, int panelHeight) {
         int squareWidth = panelWidth / ROWS;
         int squareHeight = panelHeight / COLS;
 
-        int x = col * squareWidth;
-        int y = row * squareHeight;
+        int x = pos.getC() * squareWidth;
+        int y = pos.getR() * squareHeight;
 
         Graphics2D g2d = (Graphics2D) g;  // המרה ל-Graphics2D
 
@@ -48,14 +49,14 @@ public class PlayerCursor {
     }
 
     public int getRow() {
-        return row;
+        return pos.getR();
     }
 
     public int getCol() {
-        return col;
+        return pos.getC();
     }
 
-    public int[] getPosition(){
-        return new int[]{getRow(), getCol()};
+    public Position getPosition(){
+        return pos;
     }
 }

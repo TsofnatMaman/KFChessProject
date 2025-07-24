@@ -1,35 +1,31 @@
 package board;
 
-import pieces.Moves;
-import pieces.Piece;
-import player.Player;
+import interfaces.*;
+import pieces.Position;
+
 import java.util.List;
 
-public class Board {
-    private final Piece[][] board;
-    public final Player[] players;
-    public final int ROWS = 8;
-    public final int COLS = 8;
-    public final double wM;
-    public final double hM;
+public class Board implements IBoard {
+    private final IPiece[][] board;
+    public final IPlayer[] players;
+    public final BoardConfig boardConfig;
 
     public static final int[][] linesForPlayer = {{0,1},{6,7}};
 
-    public Board(double wM, double hM, Player[] players) {
-        this.board = new Piece[ROWS][COLS];
+    public Board(int rows, int cols, double wM, double hM, IPlayer[] players) {
+        boardConfig = new BoardConfig(rows, cols, wM, hM);
+        this.board = new IPiece[rows][cols];
         this.players = players;
 
-        for (Player p : players)
-            for (Piece piece : p.getPieces()) {
+        for (IPlayer p : players)
+            for (IPiece piece : p.getPieces()) {
                 String[] pos = piece.getId().split(",");
                 board[Integer.parseInt(pos[0])][Integer.parseInt(pos[1])] = piece;
             }
-
-        this.wM = wM;
-        this.hM = hM;
     }
 
-    public void placePiece(Piece piece) {
+    @Override
+    public void placePiece(IPiece piece) {
         int row = piece.getRow();
         int col = piece.getCol();
         if (isInBounds(row, col)) {
@@ -39,29 +35,34 @@ public class Board {
         }
     }
 
+    @Override
     public boolean hasPiece(int row, int col) {
         return isInBounds(row, col) && board[row][col] != null;
     }
 
-    public Piece getPiece(int row, int col) {
+    @Override
+    public IPiece getPiece(int row, int col) {
         if (!isInBounds(row, col))
             return null;
         return board[row][col];
     }
 
-    public Piece getPiece(int[] pos) {
-        return getPiece(pos[0], pos[1]);
+    @Override
+    public IPiece getPiece(Position pos) {
+        return getPiece(pos.getR(), pos.getC());
     }
 
+    @Override
     public int getPlayerOf(int row) {
         return (linesForPlayer[0][0] <= row && row <= linesForPlayer[0][1]) ? 0 : 1;
     }
 
-    public void move(int[] from, int[] to) {
-        if (!isInBounds(from[0], from[1]) || !isInBounds(to[0], to[1]))
+    @Override
+    public void move(Position from, Position to) {
+        if (!isInBounds(from) || !isInBounds(to))
             return;
 
-        Piece piece = board[from[0]][from[1]];
+        IPiece piece = board[from.getR()][from.getC()];
         if (piece != null) {
             piece.move(to);
         }
@@ -69,9 +70,9 @@ public class Board {
 
     public void updateAll() {
         // שלב ראשון - איפוס המיקום הקודם
-        for (int row = 0; row < ROWS; row++) {
-            for (int col = 0; col < COLS; col++) {
-                Piece piece = board[row][col];
+        for (int row = 0; row < boardConfig.numRows; row++) {
+            for (int col = 0; col < boardConfig.numCols; col++) {
+                IPiece piece = board[row][col];
                 if (piece != null) {
                     int newRow = piece.getRow();
                     int newCol = piece.getCol();
@@ -83,15 +84,15 @@ public class Board {
         }
 
         // שלב שני - עדכון מצב ואכילה לפני תזוזה
-        for (Player p : players) {
-            for (Piece piece : p.getPieces()) {
+        for (IPlayer p : players) {
+            for (IPiece piece : p.getPieces()) {
                 if (piece.isCaptured()) continue;
 
                 if (piece.getCurrentState().isActionFinished()) {
                     int targetRow = piece.getCurrentState().getTargetRow();
                     int targetCol = piece.getCurrentState().getTargetCol();
 
-                    Piece target = board[targetRow][targetCol];
+                    IPiece target = board[targetRow][targetCol];
                     if (target != null && target != piece && !target.isCaptured() && !isMoving(target)) {
                         target.markCaptured();
                         players[target.getPlayer()].markPieceCaptured(target);
@@ -104,14 +105,14 @@ public class Board {
         }
 
         // שלב שלישי - אכילה לאחר הנחיתה ועדכון המיקום בלוח
-        for (Player p : players) {
-            for (Piece piece : p.getPieces()) {
+        for (IPlayer p : players) {
+            for (IPiece piece : p.getPieces()) {
                 if (piece.isCaptured()) continue;
 
                 int row = piece.getRow();
                 int col = piece.getCol();
 
-                Piece existing = board[row][col];
+                IPiece existing = board[row][col];
                 if (existing != null && existing != piece && !existing.isCaptured()) {
                     if (isMoving(piece)) {
                         existing.markCaptured();
@@ -127,70 +128,98 @@ public class Board {
         }
     }
 
-    private boolean isInBounds(int row, int col) {
-        return row >= 0 && row < ROWS && col >= 0 && col < COLS;
+    @Override
+    public boolean isInBounds(int r, int c) {
+        return r >= 0 && r < boardConfig.numRows && c >= 0 && c < boardConfig.numCols;
     }
 
-    public boolean isMoveLegal(int[] from, int[] to) {
-        Piece fromPiece = getPiece(from);
+    public boolean isInBounds(Position p){
+        return isInBounds(p.getR(), p.getC());
+    }
+
+    @Override
+    public boolean isMoveLegal(Position from, Position to) {
+        IPiece fromPiece = getPiece(from);
         if (fromPiece == null)
             return false;
 
-        if (fromPiece.getType().charAt(0) != 'N' && !isPathClear(from[0], from[1], to[0], to[1]))
+        // Check resting states first
+        EState currentState = fromPiece.getCurrentStateName();
+        if (currentState == EState.SHORT_REST || currentState == EState.LONG_REST)
             return false;
 
-        Piece toPiece = getPiece(to);
-        if (toPiece != null && fromPiece.getPlayer() == toPiece.getPlayer())
-            return false;
-
+        // Check if the move is in the legal move list
         List<Moves.Move> moves = fromPiece.getMoves().getMoves();
-        boolean isLegal = false;
-        for (Moves.Move step : moves)
-            if (from[0] + step.getDx() == to[0] && from[1] + step.getDy() == to[1]) {
-                isLegal = true;
-                break;
-            }
+        int dx = to.getR() - from.getR();
+        int dy = to.getC() - from.getC();
+        boolean isLegal = moves.stream().anyMatch(m -> m.getDx() == dx && m.getDy() == dy);
 
-        String currentState = fromPiece.getCurrentStateName();
-        if (currentState.equals("short_rest") || currentState.equals("long_rest"))
+        if (!isLegal)
             return false;
 
-        return isLegal;
+        // Check path clearance (except knights)
+        if (fromPiece.getType().charAt(0) != 'N' && !isPathClear(from, to))
+            return false;
+
+        // Check if capturing own piece
+        IPiece toPiece = getPiece(to);
+        return toPiece == null || fromPiece.getPlayer() != toPiece.getPlayer();
     }
 
-    public boolean isPathClear(int fromRow, int fromCol, int toRow, int toCol) {
-        int dRow = Integer.signum(toRow - fromRow);
-        int dCol = Integer.signum(toCol - fromCol);
 
-        int row = fromRow + dRow;
-        int col = fromCol + dCol;
+    @Override
+    public boolean isPathClear(Position from, Position to) {
+        int dRow = Integer.signum(to.getR() - from.getR());
+        int dCol = Integer.signum(to.getC() - from.getC());
 
-        while (row != toRow || col != toCol) {
-            if (!canMoveOver(getPiece(row, col)))
+        Position current = from.add(dRow, dCol);
+
+        while (!current.equals(to)) {
+            if (!canMoveOver(getPiece(current)))
                 return false;
-            row += dRow;
-            col += dCol;
+            current = current.add(dRow, dCol);
         }
+
         return true;
     }
 
-    public boolean canMoveOver(Piece p) {
+
+    @Override
+    public boolean canMoveOver(IPiece p) {
         return p == null || isMoving(p);
     }
 
-    public boolean isMoving(Piece p) {
+    @Override
+    public boolean isMoving(IPiece p) {
         if (p == null) return false;
-        String name = p.getCurrentStateName();
-        return name.equals("move") || name.equals("jump");
+        EState name = p.getCurrentStateName();
+        return EState.MOVE.equals(name) || EState.JUMP.equals(name);
     }
 
-    public boolean isJumpLegal(Piece p) {
-        String currentState = p.getCurrentStateName();
-        return !(currentState.equals("short_rest") || currentState.equals("long_rest"));
+    @Override
+    public boolean isJumpLegal(IPiece p) {
+        EState currentState = p.getCurrentStateName();
+        return !(currentState.equals(EState.SHORT_REST) || currentState.equals(EState.LONG_REST));
     }
 
-    public void jump(Piece p) {
+    @Override
+    public void jump(IPiece p) {
         if (p == null) return;
         p.jump();
+    }
+
+    @Override
+    public IPlayer[] getPlayers() {
+        return players;
+    }
+
+    @Override
+    public int getCOLS() {
+        return boardConfig.numCols;
+    }
+
+    @Override
+    public int getROWS() {
+        return boardConfig.numRows;
     }
 }

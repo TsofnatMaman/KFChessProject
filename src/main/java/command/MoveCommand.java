@@ -1,14 +1,17 @@
 package command;
 
-import board.Board;
+import interfaces.*;
+import pieces.Position;
+
+import java.awt.*;
 import java.util.Arrays;
 
 public class MoveCommand implements ICommand {
-    private final int[] from;
-    private final int[] to;
-    private final Board board;
+    private final Position from;
+    private final Position to;
+    private final IBoard board;
 
-    public MoveCommand(int[] from, int[] to, Board board) {
+    public MoveCommand(Position from, Position to, IBoard board) {
         this.from = from;
         this.to = to;
         this.board = board;
@@ -18,11 +21,11 @@ public class MoveCommand implements ICommand {
     public void execute() {
         if (!board.isMoveLegal(from, to)) {
             boolean b= board.isMoveLegal(from, to);
-            System.err.println("Illegal move from " + Arrays.toString(from) + " to " + Arrays.toString(to));
+            System.err.println("Illegal move from " + from + " to " + to);
             return;
         }
 
-        System.out.println("Moving from " + Arrays.toString(from) + " to " + Arrays.toString(to));
+        System.out.println("Moving from " + from + " to " + to);
         board.move(from, to);
     }
 }
