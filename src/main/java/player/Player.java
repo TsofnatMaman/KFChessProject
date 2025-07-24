@@ -1,6 +1,5 @@
 package player;
 
-import board.Board;
 import game.LoadPieces;
 import pieces.Piece;
 import pieces.PiecesFactory;

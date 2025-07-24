@@ -19,8 +19,8 @@ public class Board {
         this.board = new Piece[ROWS][COLS];
         this.players = players;
 
-        for(Player p:players)
-            for(Piece piece:p.getPieces()){
+        for (Player p : players)
+            for (Piece piece : p.getPieces()) {
                 String[] pos = piece.getId().split(",");
                 board[Integer.parseInt(pos[0])][Integer.parseInt(pos[1])] = piece;
             }
@@ -54,15 +54,7 @@ public class Board {
     }
 
     public int getPlayerOf(int row) {
-        List<List<Integer>> rowsOfPlayer = List.of(
-                List.of(0, 1), // שחקן 0
-                List.of(6, 7) // שחקן 1
-        );
-
-        if (rowsOfPlayer.get(0).contains(row))
-            return 0;
-        else
-            return 1;
+        return (linesForPlayer[0][0] <= row && row <= linesForPlayer[0][1]) ? 0 : 1;
     }
 
     public void move(int[] from, int[] to) {
@@ -80,20 +72,19 @@ public class Board {
             for (int col = 0; col < COLS; col++) {
                 Piece piece = board[row][col];
                 if (piece != null) {
-                    // שמור את המיקום הישן לפני העדכון
                     int oldRow = piece.getRow();
                     int oldCol = piece.getCol();
 
+                    // אכילה לפני תנועה
                     if (piece.getCurrentState().isActionFinished()) {
                         int targetRow = piece.getCurrentState().getTargetRow();
                         int targetCol = piece.getCurrentState().getTargetCol();
 
-                        // בדוק אם יש כלי שם לפני הזזה
                         Piece target = board[targetRow][targetCol];
-                        if (target != null && target != piece && !target.isCaptured()) {
+                        if (target != null && target != piece && !target.isCaptured() && !isMoving(target)) {
                             target.markCaptured();
                             players[target.getPlayer()].markPieceCaptured(target);
-                            System.out.println("Captured " + target.getId());
+                            System.out.println("Captured before move: " + target.getId());
                         }
                     }
 
@@ -102,23 +93,20 @@ public class Board {
                     int newRow = piece.getRow();
                     int newCol = piece.getCol();
 
+                    // אכילה אחרי הנחיתה
+                    Piece someoneThere = board[newRow][newCol];
+                    if (someoneThere != null && someoneThere != piece && !someoneThere.isCaptured()) {
+                        someoneThere.markCaptured();
+                        players[someoneThere.getPlayer()].markPieceCaptured(someoneThere);
+                        System.out.println("Captured on landing: " + someoneThere.getId());
+                    }
+
                     if (oldRow != newRow || oldCol != newCol) {
                         board[oldRow][oldCol] = null;
                         board[newRow][newCol] = piece;
                     }
                 }
             }
-        }
-    }
-
-    public void captureAt(int row, int col) {
-        if (!isInBounds(row, col))
-            return;
-
-        Piece captured = board[row][col];
-        if (captured != null) {
-            System.out.println("Piece captured at " + row + "," + col);
-            board[row][col] = null;
         }
     }
 
@@ -169,8 +157,14 @@ public class Board {
         return true;
     }
 
-    public boolean canMoveOver(Piece p){
-        return p == null || p.getCurrentStateName().equals("move") || p.getCurrentStateName().equals("jump");
+    public boolean canMoveOver(Piece p) {
+        return p == null || isMoving(p);
+    }
+
+    public boolean isMoving(Piece p) {
+        if (p == null) return false;
+        String name = p.getCurrentStateName();
+        return name.equals("move") || name.equals("jump");
     }
 
     public boolean isJumpLegal(Piece p) {
@@ -179,8 +173,7 @@ public class Board {
     }
 
     public void jump(Piece p) {
-        if (p == null)
-            return;
+        if (p == null) return;
         p.jump();
     }
 }
