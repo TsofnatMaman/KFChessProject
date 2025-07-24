@@ -3,6 +3,7 @@ package org.example;
 
 import board.Board;
 import game.Game;
+import player.Player;
 import player.PlayerCursor;
 import view.GameView;
 
@@ -15,10 +16,10 @@ public class Main {
             JFrame frame = new JFrame("KFChess");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            PlayerCursor pc1 = new PlayerCursor(0,0, Color.RED);
-            PlayerCursor pc2 = new PlayerCursor(7,7,Color.BLUE);
+            Player p1 = new Player(new PlayerCursor(0,0, Color.RED));
+            Player p2 = new Player(new PlayerCursor(7,7,Color.BLUE));
 
-            Game game = new Game(Board.loadFromCSV(8,8), pc1, pc2);
+            Game game = new Game(p1, p2);
             GameView gameView = new GameView(game);
             
             // Add debug prints

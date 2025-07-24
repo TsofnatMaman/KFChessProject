@@ -29,16 +29,21 @@ public class GameView extends JPanel {
     }
 
 
-    public void run() {//        startGameLoop();
-        Timer timer = new Timer(16, e -> {
-            model.update();            // עדכון הלוגיקה
-            boardPanel.updateAll();    // עדכון גרפיקה (תנועה/אנימציה)
-            boardPanel.repaint();      // ציור
+    public void run() {
+        Timer timer = new Timer(16, null); // ניצור טיימר ללא Listener כרגע
+
+        timer.addActionListener(e -> {
+            if (model.win() == -1) {
+                model.update();           // עדכון הלוגיקה
+                boardPanel.updateAll();   // עדכון גרפיקה
+                boardPanel.repaint();     // ציור
+            } else {
+                timer.stop();             // עצור את הלולאה אם המשחק נגמר
+                JOptionPane.showMessageDialog(this, "Game Over. Winner: Player " + model.win());
+            }
         });
+
         timer.start();
     }
 
-    public BoardPanel getBoardPanel() {
-        return boardPanel;
-    }
 }

@@ -4,9 +4,7 @@ import board.Board;
 import command.ICommand;
 import command.JumpCommand;
 import command.MoveCommand;
-import pieces.Piece;
 import player.Player;
-import player.PlayerCursor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +15,10 @@ public class Game {
     private List<ICommand> commandQueue;
     private Board board; // הלוח עצמו – מחלקה נפרדת בלוגיקה
 
-    public Game(Board board, PlayerCursor cursor1, PlayerCursor cursor2) {
-        this.board = board;
-        player1 = new Player(cursor1);
-        player2 = new Player(cursor2);
+    public Game(Player player1, Player player2) {
+        this.board = new Board(8,8,new Player[]{ player1, player2 });
+        this.player1 = player1;
+        this.player2 = player2;
         commandQueue = new ArrayList<>();
     }
 
@@ -69,5 +67,13 @@ public class Game {
             else
                 addCommand(new MoveCommand(previous, selected, board));
         }
+    }
+
+    public int win(){
+        if(board.players[0].isfailed())
+            return 1;
+        if(board.players[1].isfailed())
+            return 0;
+        return -1;
     }
 }

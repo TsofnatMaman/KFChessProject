@@ -2,55 +2,31 @@ package board;
 
 import pieces.Moves;
 import pieces.Piece;
-import pieces.PiecesFactory;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import player.Player;
 import java.util.List;
 
 public class Board {
     private final Piece[][] board;
+    public final Player[] players;
     public final int ROWS = 8;
     public final int COLS = 8;
     public final double wM;
     public final double hM;
 
-    public Board(double wM, double hM) {
+    public static final int[][] linesForPlayer = {{0,1},{6,7}};
+
+    public Board(double wM, double hM, Player[] players) {
         this.board = new Piece[ROWS][COLS];
-        this.wM = wM;
-        this.hM = hM;
-    }
+        this.players = players;
 
-    public static Board loadFromCSV(double wM, double hM) {
-        String csvResourcePath = "/board/board.csv";
-        Board board = new Board(wM, hM);
-
-        try (InputStream is = Board.class.getResourceAsStream(csvResourcePath);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-
-            String line;
-            int row = 0;
-
-            while ((line = reader.readLine()) != null && row < board.ROWS) {
-                String[] cells = line.split(",");
-                for (int col = 0; col < Math.min(cells.length, board.COLS); col++) {
-                    String pieceCode = cells[col].trim();
-                    if (!pieceCode.isEmpty()) {
-                        Piece piece = PiecesFactory.createPieceByCode(pieceCode, row, col);
-                        if (piece != null) {
-                            board.placePiece(piece);
-                        }
-                    }
-                }
-                row++;
+        for(Player p:players)
+            for(Piece piece:p.getPieces()){
+                String[] pos = piece.getId().split(",");
+                board[Integer.parseInt(pos[0])][Integer.parseInt(pos[1])] = piece;
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return board;
+        this.wM = wM;
+        this.hM = hM;
     }
 
     public void placePiece(Piece piece) {
@@ -108,36 +84,28 @@ public class Board {
                     int oldRow = piece.getRow();
                     int oldCol = piece.getCol();
 
+                    if (piece.getCurrentState().isActionFinished()) {
+                        int targetRow = piece.getCurrentState().getTargetRow();
+                        int targetCol = piece.getCurrentState().getTargetCol();
+
+                        // בדוק אם יש כלי שם לפני הזזה
+                        Piece target = board[targetRow][targetCol];
+                        if (target != null && target != piece && !target.isCaptured()) {
+                            target.markCaptured();
+                            players[target.getPlayer()].markPieceCaptured(target);
+                            System.out.println("Captured " + target.getId());
+                        }
+                    }
+
                     piece.update();
 
                     int newRow = piece.getRow();
                     int newCol = piece.getCol();
 
-                    if (piece.getCurrentState().isActionFinished()) {
-                        // טיפול באכילה
-                        int targetRow = piece.getCurrentState().getTargetRow();
-                        int targetCol = piece.getCurrentState().getTargetCol();
-                        Piece target = board[targetRow][targetCol];
-                        if (target != null && target != piece && !target.isCaptured()) {
-                            target.markCaptured();
-                        }
-                    }
-
-                    // אם המיקום השתנה, נעביר במערך הלוח
                     if (oldRow != newRow || oldCol != newCol) {
-                        board[oldRow][oldCol] = null;       // מנקים את המיקום הישן
-                        board[newRow][newCol] = piece;      // מכניסים למיקום החדש
+                        board[oldRow][oldCol] = null;
+                        board[newRow][newCol] = piece;
                     }
-                }
-            }
-        }
-
-        // ניקוי כלים שסומנו כ-captured
-        for (int row = 0; row < ROWS; row++) {
-            for (int col = 0; col < COLS; col++) {
-                Piece p = board[row][col];
-                if (p != null && p.isCaptured()) {
-                    board[row][col] = null;
                 }
             }
         }
@@ -193,12 +161,16 @@ public class Board {
         int col = fromCol + dCol;
 
         while (row != toRow || col != toCol) {
-            if (getPiece(row, col) != null)
+            if (!canMoveOver(getPiece(row, col)))
                 return false;
             row += dRow;
             col += dCol;
         }
         return true;
+    }
+
+    public boolean canMoveOver(Piece p){
+        return p == null || p.getCurrentStateName().equals("move") || p.getCurrentStateName().equals("jump");
     }
 
     public boolean isJumpLegal(Piece p) {
