@@ -68,44 +68,61 @@ public class Board {
     }
 
     public void updateAll() {
+        // שלב ראשון - איפוס המיקום הקודם
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLS; col++) {
                 Piece piece = board[row][col];
                 if (piece != null) {
-                    int oldRow = piece.getRow();
-                    int oldCol = piece.getCol();
-
-                    // אכילה לפני תנועה
-                    if (piece.getCurrentState().isActionFinished()) {
-                        int targetRow = piece.getCurrentState().getTargetRow();
-                        int targetCol = piece.getCurrentState().getTargetCol();
-
-                        Piece target = board[targetRow][targetCol];
-                        if (target != null && target != piece && !target.isCaptured() && !isMoving(target)) {
-                            target.markCaptured();
-                            players[target.getPlayer()].markPieceCaptured(target);
-                            System.out.println("Captured before move: " + target.getId());
-                        }
-                    }
-
-                    piece.update();
-
                     int newRow = piece.getRow();
                     int newCol = piece.getCol();
-
-                    // אכילה אחרי הנחיתה
-                    Piece someoneThere = board[newRow][newCol];
-                    if (someoneThere != null && someoneThere != piece && !someoneThere.isCaptured()) {
-                        someoneThere.markCaptured();
-                        players[someoneThere.getPlayer()].markPieceCaptured(someoneThere);
-                        System.out.println("Captured on landing: " + someoneThere.getId());
-                    }
-
-                    if (oldRow != newRow || oldCol != newCol) {
-                        board[oldRow][oldCol] = null;
-                        board[newRow][newCol] = piece;
+                    if (newRow != row || newCol != col) {
+                        board[row][col] = null;
                     }
                 }
+            }
+        }
+
+        // שלב שני - עדכון מצב ואכילה לפני תזוזה
+        for (Player p : players) {
+            for (Piece piece : p.getPieces()) {
+                if (piece.isCaptured()) continue;
+
+                if (piece.getCurrentState().isActionFinished()) {
+                    int targetRow = piece.getCurrentState().getTargetRow();
+                    int targetCol = piece.getCurrentState().getTargetCol();
+
+                    Piece target = board[targetRow][targetCol];
+                    if (target != null && target != piece && !target.isCaptured() && !isMoving(target)) {
+                        target.markCaptured();
+                        players[target.getPlayer()].markPieceCaptured(target);
+                        System.out.println("Captured before move: " + target.getId());
+                    }
+                }
+
+                piece.update();
+            }
+        }
+
+        // שלב שלישי - אכילה לאחר הנחיתה ועדכון המיקום בלוח
+        for (Player p : players) {
+            for (Piece piece : p.getPieces()) {
+                if (piece.isCaptured()) continue;
+
+                int row = piece.getRow();
+                int col = piece.getCol();
+
+                Piece existing = board[row][col];
+                if (existing != null && existing != piece && !existing.isCaptured()) {
+                    if (isMoving(piece)) {
+                        existing.markCaptured();
+                        players[existing.getPlayer()].markPieceCaptured(existing);
+                        System.out.println("Captured on landing: " + existing.getId());
+                    } else {
+                        System.out.println("No capture: piece not jumping on landing");
+                    }
+                }
+
+                board[row][col] = piece;
             }
         }
     }
