@@ -19,27 +19,27 @@ public class PlayerCursor implements IPlayerCursor {
     }
 
     public void moveUp() {
-        if (pos.getR() > 0) pos.reduceOneRow();
+        if (pos.getRow() > 0) pos.reduceOneRow();
     }
 
     public void moveDown() {
-        if (pos.getR() < ROWS-1) pos.addOneRow();
+        if (pos.getRow() < ROWS-1) pos.addOneRow();
     }
 
     public void moveLeft() {
-        if (pos.getC() > 0) pos.reduceOneCol();
+        if (pos.getCol() > 0) pos.reduceOneCol();
     }
 
     public void moveRight() {
-        if (pos.getC() < COLS-1) pos.addOneCol();
+        if (pos.getCol() < COLS-1) pos.addOneCol();
     }
 
     public void draw(Graphics g, int panelWidth, int panelHeight) {
         int squareWidth = panelWidth / ROWS;
         int squareHeight = panelHeight / COLS;
 
-        int x = pos.getC() * squareWidth;
-        int y = pos.getR() * squareHeight;
+        int x = pos.getCol() * squareWidth;
+        int y = pos.getRow() * squareHeight;
 
         Graphics2D g2d = (Graphics2D) g;  // המרה ל-Graphics2D
 
@@ -49,11 +49,11 @@ public class PlayerCursor implements IPlayerCursor {
     }
 
     public int getRow() {
-        return pos.getR();
+        return pos.getRow();
     }
 
     public int getCol() {
-        return pos.getC();
+        return pos.getCol();
     }
 
     public Position getPosition(){

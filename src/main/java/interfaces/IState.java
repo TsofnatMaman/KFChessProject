@@ -11,10 +11,6 @@ public interface IState {
 
     public void update() ;
 
-    public void updatePhysicsPosition();
-
-    public boolean isMovementFinished() ;
-
     public boolean isActionFinished() ;
 
     public int getStartCol();

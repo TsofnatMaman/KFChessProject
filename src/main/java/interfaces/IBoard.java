@@ -1,10 +1,10 @@
 package interfaces;
 
+import board.Board;
+import board.BoardConfig;
 import pieces.Position;
 
 public interface IBoard {
-
-    public static final int[][] linesForPlayer = {{0,1},{6,7}};
 
     public void placePiece(IPiece piece);
 
@@ -15,6 +15,10 @@ public interface IBoard {
     public IPiece getPiece(Position pos) ;
 
     public int getPlayerOf(int row);
+
+    public int getPlayerOf(Position pos);
+
+    public int getPlayerOf(IPiece piece);
 
     public void move(Position from, Position to);
 
@@ -28,10 +32,6 @@ public interface IBoard {
 
     public boolean isPathClear(Position from, Position to);
 
-    public boolean canMoveOver(IPiece p);
-
-    public boolean isMoving(IPiece p);
-
     public boolean isJumpLegal(IPiece p) ;
 
     public void jump(IPiece p);
@@ -41,4 +41,6 @@ public interface IBoard {
     public int getROWS();
 
     public int getCOLS();
+
+    public BoardConfig getBoardConfig();
 }

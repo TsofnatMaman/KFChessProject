@@ -40,4 +40,6 @@ public interface IPiece {
     public Moves getMoves();
 
     public Map<EState, IState> getStates() ;
+
+    boolean canMoveOver();
 }

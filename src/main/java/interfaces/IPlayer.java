@@ -15,7 +15,9 @@ public interface IPlayer {
 
     public void setPendingFrom(Position pending);
 
-    public boolean isFailed() ;
+    public boolean isFailed();
 
-    public void markPieceCaptured(IPiece p) ;
+    public void markPieceCaptured(IPiece p);
+
+    public ICommand handleSelection(IBoard board);
 }

@@ -21,7 +21,7 @@ public class Piece implements IPiece {
     private boolean wasCaptured = false;
 
     public Piece(String type, Map<EState, IState> states, EState initialState, Position pos) throws IOException {
-        id = pos.getR() + "," + pos.getC();
+        id = pos.getRow() + "," + pos.getCol();
         this.states = states;
         this.currentStateName = initialState;
         this.currentState = states.get(initialState);
@@ -84,7 +84,6 @@ public class Piece implements IPiece {
 
             EState nextState = currentState.getPhysics().getNextStateWhenFinished();
 
-            // נעדכן את הסטייט הבא כמו שהוא בלי להחליף ל-idle מיד
             setState(nextState);
             return; // עצור כדי לא לעבור שוב סטייט בפעם אחת
         }
@@ -92,13 +91,7 @@ public class Piece implements IPiece {
         // מעבר אוטומטי אם האנימציה הסתיימה
         if (currentState.getGraphics() != null && currentState.getGraphics().isAnimationFinished()) {
             EState nextState = currentState.getPhysics().getNextStateWhenFinished();
-
-            // אם הסטייט הבא הוא מנוחה - נחליף ל-idle כדי לאפשר תנועה
-            if (nextState == EState.SHORT_REST || nextState == EState.LONG_REST) {
-                setState(EState.IDLE);
-            } else {
-                setState(nextState);
-            }
+            setState(nextState);
         }
     }
 
@@ -142,12 +135,12 @@ public class Piece implements IPiece {
 
     @Override
     public int getRow() {
-        return pos.getR();
+        return pos.getRow();
     }
 
     @Override
     public int getCol() {
-        return pos.getC();
+        return pos.getCol();
     }
 
     @Override
@@ -168,5 +161,10 @@ public class Piece implements IPiece {
     @Override
     public Map<EState, IState> getStates() {
         return states;
+    }
+
+    @Override
+    public boolean canMoveOver(){
+        return currentStateName.isCanMoveOver();
     }
 }

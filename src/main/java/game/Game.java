@@ -1,6 +1,7 @@
 package game;
 
 import board.Board;
+import board.BoardConfig;
 import interfaces.ICommand;
 import command.JumpCommand;
 import command.MoveCommand;
@@ -16,8 +17,8 @@ public class Game implements IGame {
     private List<ICommand> commandQueue;
     private final IBoard board; // הלוח עצמו – מחלקה נפרדת בלוגיקה
 
-    public Game(IPlayer player1, IPlayer player2) {
-        this.board = new Board(8,8,8,8,new IPlayer[]{ player1, player2 });
+    public Game(BoardConfig bc, IPlayer player1, IPlayer player2) {
+        this.board = new Board(bc,new IPlayer[]{ player1, player2 });
         this.player1 = player1;
         this.player2 = player2;
         commandQueue = new ArrayList<>();
@@ -45,30 +46,36 @@ public class Game implements IGame {
         return board;
     }
 
-    public void handleSelection(IPlayer player) {
-        Position previous = player.getPendingFrom();
-        Position selected = player.getCursor().getPosition();
-
-        if (previous == null) {
-
-            // בדיקה אם החייל שייך לשחקן הנוכחי
-            int piecesIdR = Integer.parseInt(board.getPiece(selected).getId().charAt(0)+"");
-            if (board.getPlayerOf(piecesIdR) != player.getId()) {
-                return;
-            }
-
-            if (board.hasPiece(player.getCursor().getRow(), player.getCursor().getCol()))
-                player.setPendingFrom(selected);
-            else
-                System.err.println("choose isn't piece");
-        } else {
-            player.setPendingFrom(null);
-            if(previous.equals(selected))
-                addCommand(new JumpCommand(getBoard().getPiece(selected), board));
-            else
-                addCommand(new MoveCommand(previous, selected.copy(), board));
+    public void handleSelection(IPlayer player){
+        ICommand cmd = player.handleSelection(getBoard());
+        if(cmd != null){
+            addCommand(cmd);
         }
     }
+
+//    public void handleSelection(IPlayer player) {
+//        Position previous = player.getPendingFrom();
+//        Position selected = player.getCursor().getPosition();
+//
+//        if (previous == null) {
+//
+//            // בדיקה אם החייל שייך לשחקן הנוכחי
+//            if (board.getPiece(selected).getPlayer() != player.getId()) {
+//                return;
+//            }
+//
+//            if (board.hasPiece(player.getCursor().getRow(), player.getCursor().getCol()))
+//                player.setPendingFrom(selected);
+//            else
+//                System.err.println("choose isn't piece");
+//        } else {
+//            player.setPendingFrom(null);
+//            if(previous.equals(selected))
+//                addCommand(new JumpCommand(getBoard().getPiece(selected), board));
+//            else
+//                addCommand(new MoveCommand(previous, selected.copy(), board));
+//        }
+//    }
 
     public int win(){
         if(board.getPlayers()[0].isFailed())

@@ -16,8 +16,6 @@ public class State implements IState{
     private long startTimeNanos;
     private final double tileSize;
 
-    private double currentX, currentY;
-
     public State(String name, Position startPos, Position targetPos,
                  double tileSize, IPhysicsData physics, IGraphicsData graphics) {
         this.name = name;
@@ -34,24 +32,19 @@ public class State implements IState{
     @Override
     public void reset(EState state, Position from, Position to) {
         if (from != null && to != null) {
-            this.startPos = new Position(from.getR(), from.getC());
-            this.targetPos = new Position(to.getR(), to.getC());
+            this.startPos = new Position(from.getRow(), from.getCol());
+            this.targetPos = new Position(to.getRow(), to.getCol());
         }
 
-        this.currentX = startPos.getC() * tileSize;
-        this.currentY = startPos.getR() * tileSize;
         this.startTimeNanos = System.nanoTime();
 
-        if (graphics != null) graphics.reset(state, to);
-        if (physics != null) physics.reset(state, to);
+        if (graphics != null) graphics.reset(state, startPos);
+        if (physics != null) physics.reset(state, startPos, targetPos, tileSize, startTimeNanos);
     }
-
 
 
     @Override
     public void update() {
-        updatePhysicsPosition();
-
         if (graphics != null) graphics.update();
         if (physics != null) physics.update();
 
@@ -61,47 +54,10 @@ public class State implements IState{
     }
 
     @Override
-    public void updatePhysicsPosition() {
-        if (physics == null) return;
-
-        double speed = physics.getSpeedMetersPerSec();
-        long now = System.nanoTime();
-        double elapsedSec = (now - startTimeNanos) / 1_000_000_000.0;
-
-        double dx = (targetPos.dy(startPos)) * tileSize;
-        double dy = (targetPos.dx(startPos)) * tileSize;
-        double totalDistance = Math.sqrt(dx * dx + dy * dy);
-
-        if (totalDistance == 0 || speed == 0) return;
-
-        double distanceSoFar = Math.min(speed * elapsedSec, totalDistance);
-        double t = distanceSoFar / totalDistance;
-
-        currentX = (startPos.getC() * tileSize) + dx * t;
-        currentY = (startPos.getR() * tileSize) + dy * t;
-    }
-
-    @Override
-    public boolean isMovementFinished() {
-        if (physics == null) return true;
-
-        double speed = physics.getSpeedMetersPerSec();
-        long now = System.nanoTime();
-        double elapsedSec = (now - startTimeNanos) / 1_000_000_000.0;
-
-        double dx = targetPos.dy(startPos) * tileSize;
-        double dy = targetPos.dx(startPos) * tileSize;
-        double totalDistance = Math.sqrt(dx * dx + dy * dy);
-
-        double distanceSoFar = speed * elapsedSec;
-        return distanceSoFar >= totalDistance;
-    }
-
-    @Override
     public boolean isActionFinished() {
         switch (name) {
             case "move":
-                return isMovementFinished();
+                return physics.isMovementFinished();
             case "jump":
                 boolean finished = graphics != null && graphics.isAnimationFinished();
                 if (finished) {
@@ -118,7 +74,7 @@ public class State implements IState{
             default:
                 // כברירת מחדל, אם יש פיזיקה - נבדוק לפי תנועה, אחרת לפי אנימציה
                 if (physics != null)
-                    return isMovementFinished();
+                    return physics.isMovementFinished();
                 else if (graphics != null)
                     return graphics.isAnimationFinished();
                 else
@@ -128,42 +84,42 @@ public class State implements IState{
 
     @Override
     public int getStartCol() {
-        return startPos.getC();
+        return startPos.getCol();
     }
 
     @Override
     public int getStartRow() {
-        return startPos.getR();
+        return startPos.getRow();
     }
 
     @Override
     public Point2D.Double getCurrentPosition() {
-        return new Point2D.Double(currentX, currentY);
+        return new Point2D.Double(physics.getCurrentX(), physics.getCurrentY());
     }
 
     @Override
     public Point getBoardPosition() {
-        return new Point((int)(currentX / tileSize), (int)(currentY / tileSize));
+        return new Point((int)(physics.getCurrentX() / tileSize), (int)(physics.getCurrentY() / tileSize));
     }
 
     @Override
     public int getCurrentRow() {
-        return (int)(currentY / tileSize);
+        return (int)(physics.getCurrentY() / tileSize);
     }
 
     @Override
     public int getCurrentCol() {
-        return (int)(currentX / tileSize);
+        return (int)(physics.getCurrentX() / tileSize);
     }
 
     @Override
     public int getTargetRow() {
-        return targetPos.getR();
+        return targetPos.getRow();
     }
 
     @Override
     public int getTargetCol() {
-        return targetPos.getC();
+        return targetPos.getCol();
     }
 
     @Override

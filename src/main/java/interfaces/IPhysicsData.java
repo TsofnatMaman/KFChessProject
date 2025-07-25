@@ -11,7 +11,13 @@ public interface IPhysicsData {
 
     public void setNextStateWhenFinished(EState nextStateWhenFinished) ;
 
-    public void reset(EState state, Position to) ;
+    public void reset(EState state, Position startPos, Position to, double tileSize, long startTimeNanos);
 
     public void update() ;
+
+    boolean isMovementFinished();
+
+    double getCurrentX();
+
+    double getCurrentY();
 }

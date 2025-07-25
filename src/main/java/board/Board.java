@@ -6,21 +6,19 @@ import pieces.Position;
 import java.util.List;
 
 public class Board implements IBoard {
-    private final IPiece[][] board;
+    private final IPiece[][] boardGrid;
     public final IPlayer[] players;
     public final BoardConfig boardConfig;
 
-    public static final int[][] linesForPlayer = {{0,1},{6,7}};
-
-    public Board(int rows, int cols, double wM, double hM, IPlayer[] players) {
-        boardConfig = new BoardConfig(rows, cols, wM, hM);
-        this.board = new IPiece[rows][cols];
+    public Board(BoardConfig bc, IPlayer[] players) {
+        boardConfig = bc;
+        this.boardGrid = new IPiece[bc.numRows][bc.numCols];
         this.players = players;
 
         for (IPlayer p : players)
             for (IPiece piece : p.getPieces()) {
                 String[] pos = piece.getId().split(",");
-                board[Integer.parseInt(pos[0])][Integer.parseInt(pos[1])] = piece;
+                boardGrid[Integer.parseInt(pos[0])][Integer.parseInt(pos[1])] = piece;
             }
     }
 
@@ -29,7 +27,7 @@ public class Board implements IBoard {
         int row = piece.getRow();
         int col = piece.getCol();
         if (isInBounds(row, col)) {
-            board[row][col] = piece;
+            boardGrid[row][col] = piece;
         } else {
             throw new IllegalArgumentException("Invalid position row=" + row + ", col=" + col);
         }
@@ -37,24 +35,37 @@ public class Board implements IBoard {
 
     @Override
     public boolean hasPiece(int row, int col) {
-        return isInBounds(row, col) && board[row][col] != null;
+        return isInBounds(row, col) && boardGrid[row][col] != null;
     }
 
     @Override
     public IPiece getPiece(int row, int col) {
         if (!isInBounds(row, col))
             return null;
-        return board[row][col];
+        return boardGrid[row][col];
     }
 
     @Override
     public IPiece getPiece(Position pos) {
-        return getPiece(pos.getR(), pos.getC());
+        return getPiece(pos.getRow(), pos.getCol());
     }
 
     @Override
     public int getPlayerOf(int row) {
-        return (linesForPlayer[0][0] <= row && row <= linesForPlayer[0][1]) ? 0 : 1;
+        if (boardConfig.rowsOfPlayer.get(0).contains(row))
+            return 0;
+        else
+            return 1;
+    }
+
+    @Override
+    public int getPlayerOf(Position pos){
+        return getPlayerOf(pos.getRow());
+    }
+
+    @Override
+    public int getPlayerOf(IPiece piece){
+        return getPlayerOf(Integer.parseInt(piece.getId().split(",")[0]));
     }
 
     @Override
@@ -62,22 +73,23 @@ public class Board implements IBoard {
         if (!isInBounds(from) || !isInBounds(to))
             return;
 
-        IPiece piece = board[from.getR()][from.getC()];
+        IPiece piece = boardGrid[from.getRow()][from.getCol()];
         if (piece != null) {
             piece.move(to);
         }
     }
 
+    //TODO: understand
     public void updateAll() {
         // שלב ראשון - איפוס המיקום הקודם
         for (int row = 0; row < boardConfig.numRows; row++) {
             for (int col = 0; col < boardConfig.numCols; col++) {
-                IPiece piece = board[row][col];
+                IPiece piece = boardGrid[row][col];
                 if (piece != null) {
                     int newRow = piece.getRow();
                     int newCol = piece.getCol();
                     if (newRow != row || newCol != col) {
-                        board[row][col] = null;
+                        boardGrid[row][col] = null;
                     }
                 }
             }
@@ -92,11 +104,15 @@ public class Board implements IBoard {
                     int targetRow = piece.getCurrentState().getTargetRow();
                     int targetCol = piece.getCurrentState().getTargetCol();
 
-                    IPiece target = board[targetRow][targetCol];
-                    if (target != null && target != piece && !target.isCaptured() && !isMoving(target)) {
-                        target.markCaptured();
-                        players[target.getPlayer()].markPieceCaptured(target);
-                        System.out.println("Captured before move: " + target.getId());
+                    IPiece target = boardGrid[targetRow][targetCol];
+                    if (target != null && target != piece && !target.isCaptured() && target.canMoveOver()) {
+                        if (target.getCurrentStateName() == EState.JUMP){
+                            players[piece.getPlayer()].markPieceCaptured(piece);
+                            System.out.println("Captured before move: " + piece.getId());
+                        } else {
+                            players[target.getPlayer()].markPieceCaptured(target);
+                            System.out.println("Captured before move: " + target.getId());
+                        }
                     }
                 }
 
@@ -112,18 +128,19 @@ public class Board implements IBoard {
                 int row = piece.getRow();
                 int col = piece.getCol();
 
-                IPiece existing = board[row][col];
+                IPiece existing = boardGrid[row][col];
                 if (existing != null && existing != piece && !existing.isCaptured()) {
-                    if (isMoving(piece)) {
-                        existing.markCaptured();
+                    System.out.println(existing.getCurrentStateName());
+                    if (existing.getCurrentStateName() != EState.JUMP) {
                         players[existing.getPlayer()].markPieceCaptured(existing);
                         System.out.println("Captured on landing: " + existing.getId());
                     } else {
+                        players[piece.getPlayer()].markPieceCaptured(piece);
                         System.out.println("No capture: piece not jumping on landing");
                     }
                 }
 
-                board[row][col] = piece;
+                boardGrid[row][col] = piece;
             }
         }
     }
@@ -134,7 +151,7 @@ public class Board implements IBoard {
     }
 
     public boolean isInBounds(Position p){
-        return isInBounds(p.getR(), p.getC());
+        return isInBounds(p.getRow(), p.getCol());
     }
 
     @Override
@@ -144,22 +161,23 @@ public class Board implements IBoard {
             return false;
 
         // Check resting states first
-        EState currentState = fromPiece.getCurrentStateName();
-        if (currentState == EState.SHORT_REST || currentState == EState.LONG_REST)
+        if (!fromPiece.getCurrentStateName().isCanAction())
             return false;
 
         // Check if the move is in the legal move list
         List<Moves.Move> moves = fromPiece.getMoves().getMoves();
-        int dx = to.getR() - from.getR();
-        int dy = to.getC() - from.getC();
+        int dx = to.getRow() - from.getRow();
+        int dy = to.getCol() - from.getCol();
         boolean isLegal = moves.stream().anyMatch(m -> m.getDx() == dx && m.getDy() == dy);
 
         if (!isLegal)
             return false;
 
         // Check path clearance (except knights)
-        if (fromPiece.getType().charAt(0) != 'N' && !isPathClear(from, to))
+        if (fromPiece.getType().charAt(0) != 'N' && !isPathClear(from, to)) {
+            isPathClear(from, to);
             return false;
+        }
 
         // Check if capturing own piece
         IPiece toPiece = getPiece(to);
@@ -169,13 +187,13 @@ public class Board implements IBoard {
 
     @Override
     public boolean isPathClear(Position from, Position to) {
-        int dRow = Integer.signum(to.getR() - from.getR());
-        int dCol = Integer.signum(to.getC() - from.getC());
+        int dRow = Integer.signum(to.dx(from));//Integer.signum(to.getRow() - from.getRow());
+        int dCol = Integer.signum(to.dy(from));//Integer.signum(to.getCol() - from.getCol());
 
         Position current = from.add(dRow, dCol);
 
         while (!current.equals(to)) {
-            if (!canMoveOver(getPiece(current)))
+            if (getPiece(current) != null && !getPiece(current).canMoveOver())
                 return false;
             current = current.add(dRow, dCol);
         }
@@ -183,23 +201,9 @@ public class Board implements IBoard {
         return true;
     }
 
-
-    @Override
-    public boolean canMoveOver(IPiece p) {
-        return p == null || isMoving(p);
-    }
-
-    @Override
-    public boolean isMoving(IPiece p) {
-        if (p == null) return false;
-        EState name = p.getCurrentStateName();
-        return EState.MOVE.equals(name) || EState.JUMP.equals(name);
-    }
-
     @Override
     public boolean isJumpLegal(IPiece p) {
-        EState currentState = p.getCurrentStateName();
-        return !(currentState.equals(EState.SHORT_REST) || currentState.equals(EState.LONG_REST));
+        return p.getCurrentStateName().isCanAction();
     }
 
     @Override
@@ -221,5 +225,10 @@ public class Board implements IBoard {
     @Override
     public int getROWS() {
         return boardConfig.numRows;
+    }
+
+    @Override
+    public BoardConfig getBoardConfig() {
+        return boardConfig;
     }
 }

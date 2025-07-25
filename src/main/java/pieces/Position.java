@@ -9,11 +9,11 @@ public class Position {
         this.c = c;
     }
 
-    public int getR() {
+    public int getRow() {
         return r;
     }
 
-    public int getC() {
+    public int getCol() {
         return c;
     }
 
@@ -56,7 +56,7 @@ public class Position {
     }
 
     public Position copy(){
-        return new Position(getR(), getC());
+        return new Position(getRow(), getCol());
     }
 }
 

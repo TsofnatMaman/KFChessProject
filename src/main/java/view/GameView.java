@@ -1,6 +1,7 @@
 package view;
 
 import game.Game;
+import interfaces.IGame;
 import interfaces.IPlayerCursor;
 import player.PlayerCursor;
 
@@ -11,10 +12,10 @@ import java.awt.event.MouseEvent;
 
 public class GameView extends JPanel {
     private final BoardPanel boardPanel;
-    private final Game model;
+    private final IGame model;
     private Timer timer;
 
-    public GameView(Game model) {
+    public GameView(IGame model) {
         this.model = model;
         setLayout(new BorderLayout());
 

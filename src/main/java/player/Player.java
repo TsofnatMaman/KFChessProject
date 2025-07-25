@@ -1,6 +1,8 @@
 package player;
 
 import board.BoardConfig;
+import command.JumpCommand;
+import command.MoveCommand;
 import interfaces.*;
 import game.LoadPieces;
 import pieces.Position;
@@ -8,7 +10,6 @@ import pieces.Position;
 import java.util.ArrayList;
 import java.util.List;
 
-import static board.Board.linesForPlayer;
 
 public class Player implements IPlayer{
     private final int id;
@@ -17,18 +18,21 @@ public class Player implements IPlayer{
     private static int mone=0;
 
     private final List<IPiece> pieces;
-
-    private boolean isfailed;
+    public final List<List<Integer>> linesForPlayer = List.of(
+            List.of(0, 1), // שחקן 0
+            List.of(6, 7)  // שחקן 1
+    );
+    private boolean isFailed;
 
     public Player(IPlayerCursor pc, BoardConfig bc){
         id = mone++;
         this.cursor = pc;
         pending=null;
-        isfailed = false;
+        isFailed = false;
 
         pieces = new ArrayList<>();
 
-        for(int i:linesForPlayer[id])
+        for(int i:linesForPlayer.get(id))
             for(int j=0; j<8; j++)
                 this.pieces.add(PiecesFactory.createPieceByCode(LoadPieces.board[i][j],new Position(i, j), bc));
 
@@ -55,11 +59,34 @@ public class Player implements IPlayer{
     }
 
     public boolean isFailed(){
-        return isfailed;
+        return isFailed;
     }
 
     public void markPieceCaptured(IPiece p){
+        p.markCaptured();
         if(p.getType().charAt(0) == 'K')
-            isfailed = true;
+            isFailed = true;
+    }
+
+    public ICommand handleSelection(IBoard board){
+        Position previous = getPendingFrom();
+        Position selected = getCursor().getPosition();
+
+        if (previous == null) {
+            if(board.getPlayerOf(board.getPiece(selected)) != id)
+                return null;
+
+            if (board.hasPiece(getCursor().getRow(), getCursor().getCol()) && board.getPiece(getCursor().getPosition()).getCurrentStateName().isCanAction())
+                setPendingFrom(selected);
+            else
+                System.err.println("can not choose piece");
+        } else {
+            setPendingFrom(null);
+            if(previous.equals(selected))
+                return new JumpCommand(board.getPiece(selected), board);
+            return new MoveCommand(previous, selected.copy(), board);
+        }
+
+        return null;
     }
 }

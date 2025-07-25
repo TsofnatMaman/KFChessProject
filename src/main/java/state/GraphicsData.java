@@ -23,12 +23,14 @@ public class GraphicsData implements IGraphicsData {
         this.lastFrameTimeNanos = System.nanoTime();
     }
 
+    @Override
     public void reset(EState state, Position to) {
         // אפס רק כשעוברים לסטייט חדש
         this.currentFrame = 0;
         this.lastFrameTimeNanos = System.nanoTime();
     }
 
+    @Override
     public void update() {
         long now = System.nanoTime();
         double elapsedSec = (now - lastFrameTimeNanos) / 1_000_000_000.0;
@@ -43,27 +45,33 @@ public class GraphicsData implements IGraphicsData {
         }
     }
 
+    @Override
     // שיטה חדשה לבדיקת סיום אנימציה למצב לא לולאה
     public boolean isAnimationFinished() {
         return !isLoop && currentFrame >= totalFrames - 1;
     }
 
+    @Override
     public int getCurrentNumFrame() {
         return currentFrame;
     }
 
+    @Override
     public int getTotalFrames() {
         return totalFrames;
     }
 
+    @Override
     public double getFramesPerSec() {
         return framesPerSec;
     }
 
+    @Override
     public boolean isLoop() {
         return isLoop;
     }
 
+    @Override
     public BufferedImage getCurrentFrame() {
         return frames[currentFrame];
     }

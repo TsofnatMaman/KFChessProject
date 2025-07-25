@@ -4,6 +4,7 @@ package org.example;
 import board.Board;
 import board.BoardConfig;
 import game.Game;
+import interfaces.IGame;
 import interfaces.IPlayer;
 import pieces.Position;
 import player.Player;
@@ -24,7 +25,7 @@ public class Main {
             IPlayer p1 = new Player(new PlayerCursor(new Position(0,0), Color.RED), borderConfig);
             IPlayer p2 = new Player(new PlayerCursor(new Position(7,7),Color.BLUE), borderConfig);
 
-            Game game = new Game(p1, p2);
+            IGame game = new Game(borderConfig ,p1, p2);
             GameView gameView = new GameView(game);
             
             // Add debug prints
