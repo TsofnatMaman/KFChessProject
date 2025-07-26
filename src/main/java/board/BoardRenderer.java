@@ -6,7 +6,17 @@ import pieces.PieceRenderer;
 
 import java.awt.*;
 
+/**
+ * Utility class for rendering the board and its pieces.
+ */
 public class BoardRenderer {
+    /**
+     * Draws all pieces on the board.
+     * @param g Graphics context
+     * @param board The board to draw
+     * @param panelWidth Width of the panel
+     * @param panelHeight Height of the panel
+     */
     public static void draw(Graphics g, IBoard board, int panelWidth, int panelHeight) {
         int squareWidth = panelWidth / board.getROWS();
         int squareHeight = panelHeight / board.getCOLS();

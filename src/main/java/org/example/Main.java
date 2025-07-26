@@ -1,7 +1,5 @@
 package org.example;
 
-
-import board.Board;
 import board.BoardConfig;
 import game.Game;
 import interfaces.IGame;

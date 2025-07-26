@@ -1,6 +1,5 @@
 package interfaces;
 
-import board.Board;
 import board.BoardConfig;
 import pieces.Position;
 

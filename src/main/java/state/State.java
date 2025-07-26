@@ -2,11 +2,14 @@ package state;
 
 import interfaces.*;
 import pieces.Position;
-
 import java.awt.*;
 import java.awt.geom.Point2D;
+import utils.LogUtils; // import the logger
 
-public class State implements IState{
+/**
+ * Represents the state of a piece, including physics and graphics.
+ */
+public class State implements IState {
     private String name;
     private IPhysicsData physics;
     private IGraphicsData graphics;
@@ -16,19 +19,26 @@ public class State implements IState{
     private long startTimeNanos;
     private final double tileSize;
 
+    /**
+     * Constructs a State object representing a piece's state.
+     */
     public State(String name, Position startPos, Position targetPos,
                  double tileSize, IPhysicsData physics, IGraphicsData graphics) {
         this.name = name;
-
         this.startPos = startPos;
         this.targetPos = targetPos;
-
         this.tileSize = tileSize;
         this.physics = physics;
         this.graphics = graphics;
-        reset(EState.IDLE,startPos, null);
+        reset(EState.IDLE, startPos, null);
     }
 
+    /**
+     * Resets the state to a new action, updating physics and graphics.
+     * @param state The new state.
+     * @param from The starting position.
+     * @param to The target position.
+     */
     @Override
     public void reset(EState state, Position from, Position to) {
         if (from != null && to != null) {
@@ -42,17 +52,23 @@ public class State implements IState{
         if (physics != null) physics.reset(state, startPos, targetPos, tileSize, startTimeNanos);
     }
 
-
+    /**
+     * Updates the physics and graphics for the current state.
+     */
     @Override
     public void update() {
         if (graphics != null) graphics.update();
         if (physics != null) physics.update();
 
-        if (isActionFinished()){
+        if (isActionFinished()) {
             startPos = targetPos;
         }
     }
 
+    /**
+     * Checks if the current action (move, jump, rest) is finished.
+     * @return true if finished, false otherwise
+     */
     @Override
     public boolean isActionFinished() {
         switch (name) {
@@ -62,6 +78,7 @@ public class State implements IState{
                 boolean finished = graphics != null && graphics.isAnimationFinished();
                 if (finished) {
                     System.out.println("Jump animation finished, transitioning to: " + physics.getNextStateWhenFinished());
+                    LogUtils.logDebug("Jump animation finished, transitioning to: " + physics.getNextStateWhenFinished());
                 }
                 return finished;
             case "short_rest":
@@ -69,10 +86,11 @@ public class State implements IState{
                 boolean restFinished = graphics != null && graphics.isAnimationFinished();
                 if (restFinished) {
                     System.out.println(name + " animation finished");
+                    LogUtils.logDebug(name + " animation finished");
                 }
                 return restFinished;
             default:
-                // כברירת מחדל, אם יש פיזיקה - נבדוק לפי תנועה, אחרת לפי אנימציה
+                // By default, check physics if available, otherwise graphics
                 if (physics != null)
                     return physics.isMovementFinished();
                 else if (graphics != null)
@@ -99,17 +117,17 @@ public class State implements IState{
 
     @Override
     public Point getBoardPosition() {
-        return new Point((int)(physics.getCurrentX() / tileSize), (int)(physics.getCurrentY() / tileSize));
+        return new Point((int) (physics.getCurrentX() / tileSize), (int) (physics.getCurrentY() / tileSize));
     }
 
     @Override
     public int getCurrentRow() {
-        return (int)(physics.getCurrentY() / tileSize);
+        return (int) (physics.getCurrentY() / tileSize);
     }
 
     @Override
     public int getCurrentCol() {
-        return (int)(physics.getCurrentX() / tileSize);
+        return (int) (physics.getCurrentX() / tileSize);
     }
 
     @Override

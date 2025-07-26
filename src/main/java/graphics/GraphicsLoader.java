@@ -7,13 +7,14 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.*;
+import utils.LogUtils;
 
 public class GraphicsLoader {
 
     private static final Map<String, Image> cache = new HashMap<>();
 
     /**
-     * טוען תמונה אחת לפי כלי, מצב, ואינדקס פריים (1-based)
+     * Loads a single sprite image by piece type, state, and frame index (1-based).
      */
     public static BufferedImage loadSprite(String pieceType, EState stateName, int frameIndex) {
         String path = String.format("/pieces/%s/states/%s/sprites/%d.png", pieceType, stateName, frameIndex);
@@ -28,12 +29,13 @@ public class GraphicsLoader {
             return image;
         } catch (IOException | IllegalArgumentException e) {
             System.err.println("Failed to load sprite: " + path);
+            LogUtils.logDebug("Failed to load sprite: " + path);
             return null;
         }
     }
 
     /**
-     * טוען את כל הפריימים ברצף (1,2,3,...) עד שהקובץ הבא לא קיים
+     * Loads all sprite frames in sequence (1,2,3,...) until the next file does not exist.
      */
     public static BufferedImage[] loadAllSprites(String pieceType, EState stateName) {
         List<BufferedImage> sprites = new ArrayList<>();

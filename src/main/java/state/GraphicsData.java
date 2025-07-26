@@ -6,6 +6,9 @@ import pieces.Position;
 
 import java.awt.image.BufferedImage;
 
+/**
+ * Handles graphics data for piece animation.
+ */
 public class GraphicsData implements IGraphicsData {
     private BufferedImage[] frames;
     private int totalFrames;
@@ -14,6 +17,9 @@ public class GraphicsData implements IGraphicsData {
     private boolean isLoop;
     private long lastFrameTimeNanos;
 
+    /**
+     * Constructs GraphicsData for piece animation.
+     */
     public GraphicsData(BufferedImage[] frames, double framesPerSec, boolean isLoop) {
         this.frames = frames;
         this.totalFrames = frames.length;
@@ -23,13 +29,21 @@ public class GraphicsData implements IGraphicsData {
         this.lastFrameTimeNanos = System.nanoTime();
     }
 
+    /**
+     * Resets the animation to the first frame.
+     * @param state The new state.
+     * @param to The target position.
+     */
     @Override
     public void reset(EState state, Position to) {
-        // אפס רק כשעוברים לסטייט חדש
+        // Reset only when switching to a new state
         this.currentFrame = 0;
         this.lastFrameTimeNanos = System.nanoTime();
     }
 
+    /**
+     * Updates the animation frame based on elapsed time.
+     */
     @Override
     public void update() {
         long now = System.nanoTime();
@@ -45,8 +59,11 @@ public class GraphicsData implements IGraphicsData {
         }
     }
 
+    /**
+     * Checks if the animation has finished (for non-looping states).
+     * @return true if finished, false otherwise
+     */
     @Override
-    // שיטה חדשה לבדיקת סיום אנימציה למצב לא לולאה
     public boolean isAnimationFinished() {
         return !isLoop && currentFrame >= totalFrames - 1;
     }

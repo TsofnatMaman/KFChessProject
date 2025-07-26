@@ -7,21 +7,36 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents the legal moves for a piece type.
+ */
 public class Moves {
 
-    public class Move{
+    /**
+     * Represents a single move with delta x and delta y.
+     */
+    public class Move {
         int dx;
         int dy;
 
-        Move(int dx, int dy){
+        /**
+         * Constructs a move with the given delta x and delta y.
+         */
+        Move(int dx, int dy) {
             this.dx = dx;
             this.dy = dy;
         }
 
+        /**
+         * Gets the delta x of the move.
+         */
         public int getDx() {
             return dx;
         }
 
+        /**
+         * Gets the delta y of the move.
+         */
         public int getDy() {
             return dy;
         }
@@ -29,10 +44,19 @@ public class Moves {
 
     private final List<Move> moves;
 
+    /**
+     * Gets the list of legal moves.
+     * @return List of Move objects
+     */
     public List<Move> getMoves() {
         return moves;
     }
 
+    /**
+     * Loads moves for a piece type from a resource file.
+     * @param pieceType The type of the piece
+     * @throws IOException If resource not found or error reading
+     */
     public Moves(String pieceType) throws IOException {
         moves = new ArrayList<>();
 
@@ -55,5 +79,4 @@ public class Moves {
             }
         }
     }
-
 }

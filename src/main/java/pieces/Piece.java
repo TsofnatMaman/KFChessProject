@@ -1,6 +1,7 @@
 package pieces;
 
 import interfaces.*;
+import utils.LogUtils;
 
 import java.awt.geom.Point2D;
 import java.io.IOException;
@@ -65,6 +66,7 @@ public class Piece implements IPiece {
             currentState.reset(newStateName, pos, pos);
         } else if (!states.containsKey(newStateName)) {
             System.err.println("State '" + newStateName + "' not found!");
+            LogUtils.logDebug("State '" + newStateName + "' not found!");
         }
     }
 
@@ -104,6 +106,7 @@ public class Piece implements IPiece {
             currentState.reset(EState.MOVE, pos, to);
         } else {
             System.err.println("Missing 'move' state!");
+            LogUtils.logDebug("Missing 'move' state!");
         }
     }
 
@@ -115,6 +118,7 @@ public class Piece implements IPiece {
             currentState.reset(EState.JUMP,pos, pos);
         } else {
             System.err.println("Missing 'jump' state!");
+            LogUtils.logDebug("Missing 'jump' state!");
         }
     }
 

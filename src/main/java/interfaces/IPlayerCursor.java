@@ -4,20 +4,23 @@ import pieces.Position;
 
 import java.awt.*;
 
+/**
+ * Interface for player cursor operations.
+ */
 public interface IPlayerCursor {
-    public void moveUp();
+    void moveUp();
 
-    public void moveDown();
+    void moveDown();
 
-    public void moveLeft();
+    void moveLeft();
 
-    public void moveRight();
+    void moveRight();
 
-    public void draw(Graphics g, int panelWidth, int panelHeight) ;
+    void draw(Graphics g, int panelWidth, int panelHeight);
 
-    public int getRow();
+    int getRow();
 
-    public int getCol();
+    int getCol();
 
-    public Position getPosition();
+    Position getPosition();
 }

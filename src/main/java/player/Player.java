@@ -6,11 +6,14 @@ import command.MoveCommand;
 import interfaces.*;
 import game.LoadPieces;
 import pieces.Position;
+import utils.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Represents a player in the game, holding pieces and managing actions.
+ */
 public class Player implements IPlayer{
     private final int id;
     private final IPlayerCursor cursor;
@@ -19,11 +22,14 @@ public class Player implements IPlayer{
 
     private final List<IPiece> pieces;
     public final List<List<Integer>> linesForPlayer = List.of(
-            List.of(0, 1), // שחקן 0
-            List.of(6, 7)  // שחקן 1
+            List.of(0, 1), // Player 0
+            List.of(6, 7)  // Player 1
     );
     private boolean isFailed;
 
+    /**
+     * Constructs a Player, initializes pieces and status.
+     */
     public Player(IPlayerCursor pc, BoardConfig bc){
         id = mone++;
         this.cursor = pc;
@@ -38,36 +44,71 @@ public class Player implements IPlayer{
 
     }
 
+    /**
+     * Returns the list of pieces owned by the player.
+     */
+    @Override
     public List<IPiece> getPieces() {
         return pieces;
     }
 
+    /**
+     * Returns the player's ID.
+     */
+    @Override
     public int getId() {
         return id;
     }
 
+    /**
+     * Returns the player's cursor.
+     */
+    @Override
     public IPlayerCursor getCursor() {
         return cursor;
     }
 
+    /**
+     * Gets the pending position for selection.
+     */
+    @Override
     public Position getPendingFrom() {
         return pending;
     }
 
+    /**
+     * Sets the pending position for selection.
+     */
+    @Override
     public void setPendingFrom(Position pending) {
         this.pending = pending == null? null : pending.copy();
     }
 
+    /**
+     * Returns true if the player has failed (e.g., lost their king).
+     */
+    @Override
     public boolean isFailed(){
         return isFailed;
     }
 
+    /**
+     * Marks a piece as captured and updates player status if king is captured.
+     * @param p The piece to mark as captured.
+     */
+    @Override
     public void markPieceCaptured(IPiece p){
         p.markCaptured();
         if(p.getType().charAt(0) == 'K')
             isFailed = true;
     }
 
+    /**
+     * Handles the selection logic for the player, returning a command if an action is performed.
+     * @param board The game board.
+     * @return ICommand representing the action, or null if no action.
+     */
+    @Override
     public ICommand handleSelection(IBoard board){
         Position previous = getPendingFrom();
         Position selected = getCursor().getPosition();
@@ -78,8 +119,10 @@ public class Player implements IPlayer{
 
             if (board.hasPiece(getCursor().getRow(), getCursor().getCol()) && board.getPiece(getCursor().getPosition()).getCurrentStateName().isCanAction())
                 setPendingFrom(selected);
-            else
+            else {
                 System.err.println("can not choose piece");
+                LogUtils.logDebug("can not choose piece");
+            }
         } else {
             setPendingFrom(null);
             if(previous.equals(selected))

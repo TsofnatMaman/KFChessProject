@@ -2,14 +2,21 @@ package board;
 
 import interfaces.*;
 import pieces.Position;
+import utils.LogUtils; // Only this import is needed for logging
 
 import java.util.List;
 
+/**
+ * Represents the game board and manages piece placement and movement.
+ */
 public class Board implements IBoard {
     private final IPiece[][] boardGrid;
     public final IPlayer[] players;
     public final BoardConfig boardConfig;
 
+    /**
+     * Constructs the board with the given configuration and players.
+     */
     public Board(BoardConfig bc, IPlayer[] players) {
         boardConfig = bc;
         this.boardGrid = new IPiece[bc.numRows][bc.numCols];
@@ -79,9 +86,11 @@ public class Board implements IBoard {
         }
     }
 
-    //TODO: understand
+    /**
+     * Updates all pieces and handles captures and board state.
+     */
     public void updateAll() {
-        // שלב ראשון - איפוס המיקום הקודם
+        // Step 1 - Reset previous positions
         for (int row = 0; row < boardConfig.numRows; row++) {
             for (int col = 0; col < boardConfig.numCols; col++) {
                 IPiece piece = boardGrid[row][col];
@@ -95,7 +104,7 @@ public class Board implements IBoard {
             }
         }
 
-        // שלב שני - עדכון מצב ואכילה לפני תזוזה
+        // Step 2 - Update state and handle captures before movement
         for (IPlayer p : players) {
             for (IPiece piece : p.getPieces()) {
                 if (piece.isCaptured()) continue;
@@ -109,9 +118,11 @@ public class Board implements IBoard {
                         if (target.getCurrentStateName() == EState.JUMP){
                             players[piece.getPlayer()].markPieceCaptured(piece);
                             System.out.println("Captured before move: " + piece.getId());
+                            LogUtils.logDebug("Captured before move: " + piece.getId());
                         } else {
                             players[target.getPlayer()].markPieceCaptured(target);
                             System.out.println("Captured before move: " + target.getId());
+                            LogUtils.logDebug("Captured before move: " + target.getId());
                         }
                     }
                 }
@@ -120,7 +131,7 @@ public class Board implements IBoard {
             }
         }
 
-        // שלב שלישי - אכילה לאחר הנחיתה ועדכון המיקום בלוח
+        // Step 3 - Handle captures after landing and update board positions
         for (IPlayer p : players) {
             for (IPiece piece : p.getPieces()) {
                 if (piece.isCaptured()) continue;
@@ -131,12 +142,15 @@ public class Board implements IBoard {
                 IPiece existing = boardGrid[row][col];
                 if (existing != null && existing != piece && !existing.isCaptured()) {
                     System.out.println(existing.getCurrentStateName());
+                    LogUtils.logDebug("State: " + existing.getCurrentStateName());
                     if (existing.getCurrentStateName() != EState.JUMP) {
                         players[existing.getPlayer()].markPieceCaptured(existing);
                         System.out.println("Captured on landing: " + existing.getId());
+                        LogUtils.logDebug("Captured on landing: " + existing.getId());
                     } else {
                         players[piece.getPlayer()].markPieceCaptured(piece);
                         System.out.println("No capture: piece not jumping on landing");
+                        LogUtils.logDebug("No capture: piece not jumping on landing");
                     }
                 }
 
@@ -187,8 +201,8 @@ public class Board implements IBoard {
 
     @Override
     public boolean isPathClear(Position from, Position to) {
-        int dRow = Integer.signum(to.dx(from));//Integer.signum(to.getRow() - from.getRow());
-        int dCol = Integer.signum(to.dy(from));//Integer.signum(to.getCol() - from.getCol());
+        int dRow = Integer.signum(to.dx(from));
+        int dCol = Integer.signum(to.dy(from));
 
         Position current = from.add(dRow, dCol);
 

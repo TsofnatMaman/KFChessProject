@@ -2,9 +2,7 @@ package view;
 
 import interfaces.*;
 
-import board.Board;
 import board.BoardRenderer;
-import player.PlayerCursor;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -15,7 +13,11 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.function.Consumer;
+import utils.LogUtils;
 
+/**
+ * Panel for displaying the game board and handling player input.
+ */
 public class BoardPanel extends JPanel {
     private BufferedImage boardImage;
     private final IBoard board;
@@ -26,6 +28,9 @@ public class BoardPanel extends JPanel {
     private Consumer<Void> onPlayer1Action;
     private Consumer<Void> onPlayer2Action;
 
+    /**
+     * Constructs the board panel, sets up key listeners and loads board image.
+     */
     public BoardPanel(IBoard board, IPlayerCursor pc1, IPlayerCursor pc2) {
         this.board = board;
         this.cursor1 = pc1;
@@ -44,6 +49,9 @@ public class BoardPanel extends JPanel {
         });
     }
 
+    /**
+     * Loads the board image from resources for rendering.
+     */
     private void loadBoardImage() {
         try {
             URL imageUrl = getClass().getClassLoader().getResource("board/board.png");
@@ -51,12 +59,19 @@ public class BoardPanel extends JPanel {
                 boardImage = ImageIO.read(imageUrl);
             } else {
                 System.err.println("Image not found in resources!");
+                LogUtils.logDebug("Image not found in resources!");
             }
         } catch (IOException e) {
             e.printStackTrace();
+            LogUtils.logDebug("Exception loading board image: " + e.getMessage());
         }
     }
 
+    /**
+     * Handles keyboard input for moving player cursors and triggering actions.
+     *
+     * @param e The KeyEvent to handle.
+     */
     private void handleKey(KeyEvent e) {
         int key = e.getKeyCode();
 
@@ -100,19 +115,33 @@ public class BoardPanel extends JPanel {
         repaint();
     }
 
+    /**
+     * Sets the action handler for player 1.
+     */
     public void setOnPlayer1Action(Consumer<Void> handler) {
         this.onPlayer1Action = handler;
     }
 
+    /**
+     * Sets the action handler for player 2.
+     */
     public void setOnPlayer2Action(Consumer<Void> handler) {
         this.onPlayer2Action = handler;
     }
 
+    /**
+     * Updates all pieces on the board by calling board.updateAll().
+     */
     public void updateAll() {
         if (board != null)
             board.updateAll();
     }
 
+    /**
+     * Paints the board, pieces, and player cursors.
+     *
+     * @param g The Graphics context.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
