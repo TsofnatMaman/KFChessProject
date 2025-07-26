@@ -4,13 +4,23 @@ import interfaces.*;
 import pieces.Position;
 import utils.LogUtils;
 
+/**
+ * Command for moving a piece from one position to another on the board.
+ */
 public class MoveCommand implements ICommand {
+    /** The starting position of the move. */
     private final Position from;
+    /** The target position of the move. */
     private final Position to;
+    /** The board on which the move is performed. */
     private final IBoard board;
 
     /**
      * Constructs a MoveCommand for moving a piece from one position to another.
+     *
+     * @param from The starting position
+     * @param to The target position
+     * @param board The board instance
      */
     public MoveCommand(Position from, Position to, IBoard board) {
         this.from = from;
@@ -20,6 +30,7 @@ public class MoveCommand implements ICommand {
 
     /**
      * Executes the move command, moving the piece if the move is legal.
+     * Logs the action and handles illegal moves.
      */
     @Override
     public void execute() {

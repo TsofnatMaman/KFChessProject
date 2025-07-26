@@ -2,7 +2,7 @@ package board;
 
 import interfaces.*;
 import pieces.Position;
-import utils.LogUtils; // Only this import is needed for logging
+import utils.LogUtils;
 
 import java.util.List;
 
@@ -10,12 +10,19 @@ import java.util.List;
  * Represents the game board and manages piece placement and movement.
  */
 public class Board implements IBoard {
+    /** 2D array representing the board grid with pieces. */
     private final IPiece[][] boardGrid;
+    /** Array of players in the game. */
     public final IPlayer[] players;
+    /** Board configuration object. */
     public final BoardConfig boardConfig;
 
     /**
      * Constructs the board with the given configuration and players.
+     * Initializes the board grid with the pieces from each player.
+     *
+     * @param bc Board configuration
+     * @param players Array of players
      */
     public Board(BoardConfig bc, IPlayer[] players) {
         boardConfig = bc;
@@ -29,6 +36,10 @@ public class Board implements IBoard {
             }
     }
 
+    /**
+     * Places a piece on the board at its logical position.
+     * @param piece The piece to place
+     */
     @Override
     public void placePiece(IPiece piece) {
         int row = piece.getRow();
@@ -40,11 +51,17 @@ public class Board implements IBoard {
         }
     }
 
+    /**
+     * Checks if there is a piece at the specified row and column.
+     */
     @Override
     public boolean hasPiece(int row, int col) {
         return isInBounds(row, col) && boardGrid[row][col] != null;
     }
 
+    /**
+     * Gets the piece at the specified row and column.
+     */
     @Override
     public IPiece getPiece(int row, int col) {
         if (!isInBounds(row, col))
@@ -52,11 +69,17 @@ public class Board implements IBoard {
         return boardGrid[row][col];
     }
 
+    /**
+     * Gets the piece at the specified position.
+     */
     @Override
     public IPiece getPiece(Position pos) {
         return getPiece(pos.getRow(), pos.getCol());
     }
 
+    /**
+     * Returns the player index for a given row.
+     */
     @Override
     public int getPlayerOf(int row) {
         if (boardConfig.rowsOfPlayer.get(0).contains(row))
@@ -65,16 +88,25 @@ public class Board implements IBoard {
             return 1;
     }
 
+    /**
+     * Returns the player index for a given position.
+     */
     @Override
     public int getPlayerOf(Position pos){
         return getPlayerOf(pos.getRow());
     }
 
+    /**
+     * Returns the player index for a given piece.
+     */
     @Override
     public int getPlayerOf(IPiece piece){
         return getPlayerOf(Integer.parseInt(piece.getId().split(",")[0]));
     }
 
+    /**
+     * Moves a piece from one position to another.
+     */
     @Override
     public void move(Position from, Position to) {
         if (!isInBounds(from) || !isInBounds(to))
@@ -88,6 +120,8 @@ public class Board implements IBoard {
 
     /**
      * Updates all pieces and handles captures and board state.
+     * This method resets previous positions, updates piece states,
+     * and handles captures before and after movement.
      */
     public void updateAll() {
         // Step 1 - Reset previous positions
@@ -159,15 +193,24 @@ public class Board implements IBoard {
         }
     }
 
+    /**
+     * Checks if the specified row and column are within board bounds.
+     */
     @Override
     public boolean isInBounds(int r, int c) {
         return r >= 0 && r < boardConfig.numRows && c >= 0 && c < boardConfig.numCols;
     }
 
+    /**
+     * Checks if the specified position is within board bounds.
+     */
     public boolean isInBounds(Position p){
         return isInBounds(p.getRow(), p.getCol());
     }
 
+    /**
+     * Checks if a move from one position to another is legal.
+     */
     @Override
     public boolean isMoveLegal(Position from, Position to) {
         IPiece fromPiece = getPiece(from);
@@ -199,6 +242,9 @@ public class Board implements IBoard {
     }
 
 
+    /**
+     * Checks if the path between two positions is clear for movement.
+     */
     @Override
     public boolean isPathClear(Position from, Position to) {
         int dRow = Integer.signum(to.dx(from));
@@ -215,32 +261,50 @@ public class Board implements IBoard {
         return true;
     }
 
+    /**
+     * Checks if a jump action is legal for the given piece.
+     */
     @Override
     public boolean isJumpLegal(IPiece p) {
         return p.getCurrentStateName().isCanAction();
     }
 
+    /**
+     * Performs a jump action for the given piece.
+     */
     @Override
     public void jump(IPiece p) {
         if (p == null) return;
         p.jump();
     }
 
+    /**
+     * Returns the array of players.
+     */
     @Override
     public IPlayer[] getPlayers() {
         return players;
     }
 
+    /**
+     * Returns the number of columns on the board.
+     */
     @Override
     public int getCOLS() {
         return boardConfig.numCols;
     }
 
+    /**
+     * Returns the number of rows on the board.
+     */
     @Override
     public int getROWS() {
         return boardConfig.numRows;
     }
 
+    /**
+     * Returns the board configuration.
+     */
     @Override
     public BoardConfig getBoardConfig() {
         return boardConfig;

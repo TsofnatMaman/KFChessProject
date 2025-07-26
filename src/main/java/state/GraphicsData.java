@@ -19,6 +19,9 @@ public class GraphicsData implements IGraphicsData {
 
     /**
      * Constructs GraphicsData for piece animation.
+     * @param frames Array of animation frames
+     * @param framesPerSec Number of frames per second
+     * @param isLoop Whether the animation should loop
      */
     public GraphicsData(BufferedImage[] frames, double framesPerSec, boolean isLoop) {
         this.frames = frames;
@@ -31,8 +34,8 @@ public class GraphicsData implements IGraphicsData {
 
     /**
      * Resets the animation to the first frame.
-     * @param state The new state.
-     * @param to The target position.
+     * @param state The new state
+     * @param to The target position
      */
     @Override
     public void reset(EState state, Position to) {
@@ -68,26 +71,46 @@ public class GraphicsData implements IGraphicsData {
         return !isLoop && currentFrame >= totalFrames - 1;
     }
 
+    /**
+     * Gets the current frame number.
+     * @return The current frame index
+     */
     @Override
     public int getCurrentNumFrame() {
         return currentFrame;
     }
 
+    /**
+     * Gets the total number of frames.
+     * @return The total number of frames
+     */
     @Override
     public int getTotalFrames() {
         return totalFrames;
     }
 
+    /**
+     * Gets the frames per second for the animation.
+     * @return Frames per second
+     */
     @Override
     public double getFramesPerSec() {
         return framesPerSec;
     }
 
+    /**
+     * Returns true if the animation is looping.
+     * @return true if looping, false otherwise
+     */
     @Override
     public boolean isLoop() {
         return isLoop;
     }
 
+    /**
+     * Gets the current frame image.
+     * @return The current frame as BufferedImage
+     */
     @Override
     public BufferedImage getCurrentFrame() {
         return frames[currentFrame];

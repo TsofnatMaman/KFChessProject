@@ -4,20 +4,27 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+/**
+ * Utility class for loading initial piece codes from a CSV file into a static board matrix.
+ */
 public class LoadPieces {
 
+    /** Number of rows in the board. */
     public static final int ROWS = 8;
+    /** Number of columns in the board. */
     public static final int COLS = 8;
 
-    // מטריצה סטטית של חלקים
+    /** Static matrix holding the piece codes for the board. */
     public static final String[][] board = new String[ROWS][COLS];
 
+    // Static initializer to load the board from CSV.
     static {
         loadFromCSV();
     }
 
     /**
-     * טוען חלקים מקובץ CSV ישירות אל תוך המטריצה הסטטית.
+     * Loads piece codes from a CSV file directly into the static board matrix.
+     * The CSV is expected to be located at /board/board.csv in the resources.
      */
     private static void loadFromCSV() {
         String csvResourcePath = "/board/board.csv";
@@ -47,9 +54,9 @@ public class LoadPieces {
     }
 
     /**
-     * מחזיר את המטריצה הסטטטית של החלקים.
+     * Returns the static matrix of piece codes for the board.
      *
-     * @return מטריצת חלקים
+     * @return 2D array of piece codes
      */
     public static String[][] getBoardMatrix() {
         return board;

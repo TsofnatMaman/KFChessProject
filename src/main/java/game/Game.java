@@ -5,30 +5,41 @@ import board.BoardConfig;
 import interfaces.ICommand;
 import interfaces.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * Main game logic and state management.
+ * Handles command execution, player turns, and win condition.
  */
 public class Game implements IGame {
+    /** Player 1 instance. */
     private final IPlayer player1;
+    /** Player 2 instance. */
     private final IPlayer player2;
-    private List<ICommand> commandQueue;
-    private final IBoard board; // The board itself – separate class for logic
+    /** Queue of commands to be executed. */
+    private Queue<ICommand> commandQueue;
+    /** The board instance for the game. */
+    private final IBoard board;
 
     /**
      * Constructs the game with the given board config and players.
+     * Initializes the board and command queue.
+     *
+     * @param bc Board configuration
+     * @param player1 First player
+     * @param player2 Second player
      */
     public Game(BoardConfig bc, IPlayer player1, IPlayer player2) {
         this.board = new Board(bc,new IPlayer[]{ player1, player2 });
         this.player1 = player1;
         this.player2 = player2;
-        commandQueue = new ArrayList<>();
+        commandQueue = new LinkedList<>();
     }
 
     /**
      * Adds a command to the queue.
+     * @param cmd The command to add
      */
     @Override
     public void addCommand(ICommand cmd){
@@ -41,12 +52,13 @@ public class Game implements IGame {
     @Override
     public void update() {
         while (!commandQueue.isEmpty()) {
-            commandQueue.remove(0).execute();
+            commandQueue.poll().execute();
         }
     }
 
     /**
      * Gets player 1.
+     * @return The first player
      */
     @Override
     public IPlayer getPlayer1() {
@@ -55,6 +67,7 @@ public class Game implements IGame {
 
     /**
      * Gets player 2.
+     * @return The second player
      */
     @Override
     public IPlayer getPlayer2() {
@@ -63,6 +76,7 @@ public class Game implements IGame {
 
     /**
      * Gets the game board.
+     * @return The board instance
      */
     @Override
     public IBoard getBoard() {
@@ -71,6 +85,8 @@ public class Game implements IGame {
 
     /**
      * Handles selection for the given player.
+     * Adds the resulting command to the queue if not null.
+     * @param player The player making a selection
      */
     @Override
     public void handleSelection(IPlayer player){
@@ -82,6 +98,7 @@ public class Game implements IGame {
 
     /**
      * Returns the winner: 0 for player 1, 1 for player 2, -1 if no winner yet.
+     * @return The winner's player index, or -1 if no winner
      */
     @Override
     public int win(){

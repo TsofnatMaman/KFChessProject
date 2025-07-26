@@ -1,18 +1,48 @@
 package interfaces;
 
+/**
+ * Interface for game logic and state management.
+ */
 public interface IGame {
 
-    public void addCommand(ICommand cmd);
+    /**
+     * Adds a command to the queue.
+     * @param cmd The command to add
+     */
+    void addCommand(ICommand cmd);
 
-    public void update() ;
+    /**
+     * Executes all commands in the queue.
+     */
+    void update();
 
-    public IPlayer getPlayer1();
+    /**
+     * Gets player 1.
+     * @return The first player
+     */
+    IPlayer getPlayer1();
 
-    public IPlayer getPlayer2();
+    /**
+     * Gets player 2.
+     * @return The second player
+     */
+    IPlayer getPlayer2();
 
-    public IBoard getBoard();
+    /**
+     * Gets the game board.
+     * @return The board instance
+     */
+    IBoard getBoard();
 
-    public void handleSelection(IPlayer player) ;
+    /**
+     * Handles selection for the given player.
+     * @param player The player making a selection
+     */
+    void handleSelection(IPlayer player);
 
-    public int win();
+    /**
+     * Returns the winner: 0 for player 1, 1 for player 2, -1 if no winner yet.
+     * @return The winner's player index, or -1 if no winner
+     */
+    int win();
 }

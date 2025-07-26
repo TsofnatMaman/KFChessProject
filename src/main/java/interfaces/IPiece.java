@@ -5,41 +5,107 @@ import pieces.Position;
 import java.awt.geom.Point2D;
 import java.util.Map;
 
+/**
+ * Interface for piece operations.
+ */
 public interface IPiece {
 
-    public int getPlayer() ;
+    /**
+     * Gets the player index for this piece.
+     * @return The player index
+     */
+    int getPlayer();
 
-    public String getId();
+    /**
+     * Gets the unique ID of the piece.
+     * @return The piece ID
+     */
+    String getId();
 
-    public String getType();
+    /**
+     * Gets the type of the piece.
+     * @return The piece type
+     */
+    String getType();
 
-    public void setState(EState newStateName) ;
+    /**
+     * Sets the state of the piece.
+     * @param newStateName The new state
+     */
+    void setState(EState newStateName);
 
-    public IState getCurrentState();
+    /**
+     * Gets the current state object.
+     * @return The current state
+     */
+    IState getCurrentState();
 
-    public void update() ;
+    /**
+     * Updates the piece's state.
+     */
+    void update();
 
-    public void move(Position to) ;
+    /**
+     * Moves the piece to a new position.
+     * @param to The target position
+     */
+    void move(Position to);
 
-    public void jump() ;
+    /**
+     * Performs a jump action for the piece.
+     */
+    void jump();
 
-    public boolean isCaptured();
+    /**
+     * Returns true if the piece is captured.
+     * @return true if captured, false otherwise
+     */
+    boolean isCaptured();
 
-    public void markCaptured();
+    /**
+     * Marks the piece as captured.
+     */
+    void markCaptured();
 
-    public void setLogicalPosition(Position pos) ;
+    /**
+     * Gets the current row of the piece.
+     * @return The row index
+     */
+    int getRow();
 
-    public int getRow();
+    /**
+     * Gets the current column of the piece.
+     * @return The column index
+     */
+    int getCol();
 
-    public int getCol();
+    /**
+     * Gets the current state name.
+     * @return The current state name
+     */
+    EState getCurrentStateName();
 
-    public EState getCurrentStateName();
+    /**
+     * Gets the current pixel position of the piece.
+     * @return The pixel position
+     */
+    Point2D.Double getCurrentPixelPosition();
 
-    public Point2D.Double getCurrentPixelPosition();
+    /**
+     * Gets the legal moves for the piece.
+     * @return The Moves object
+     */
+    Moves getMoves();
 
-    public Moves getMoves();
+    /**
+     * Gets the map of states for the piece.
+     * @return Map of states
+     */
+    Map<EState, IState> getStates();
 
-    public Map<EState, IState> getStates() ;
-
+    /**
+     * Returns true if the piece can move over other pieces.
+     * @return true if can move over, false otherwise
+     */
     boolean canMoveOver();
 }

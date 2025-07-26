@@ -1,5 +1,6 @@
 package pieces;
 
+import board.BoardConfig;
 import interfaces.*;
 import utils.LogUtils;
 
@@ -35,16 +36,12 @@ public class Piece implements IPiece {
 
     @Override
     public int getPlayer() {
-        List<List<Integer>> rowsOfPlayer = List.of(
-                List.of(0, 1), // שחקן 0
-                List.of(6, 7)  // שחקן 1
-        );
-
-        if (rowsOfPlayer.get(0).contains(Integer.parseInt(getId().charAt(0)+"")))
-            return 0;
-        else
-            return 1;
+        if (BoardConfig.rowsOfPlayer.get(0).contains(Integer.parseInt(this.getId().split(",")[0]))) return 0;
+        if (BoardConfig.rowsOfPlayer.get(1).contains(Integer.parseInt(this.getId().split(",")[0]))) return 1;
+        throw new IllegalStateException("Invalid row: " + this.pos.r);
     }
+
+
 
     @Override
     public String getId() {
@@ -130,11 +127,6 @@ public class Piece implements IPiece {
     @Override
     public void markCaptured() {
         this.wasCaptured = true;
-    }
-
-    @Override
-    public void setLogicalPosition(Position pos) {
-        this.pos = pos;
     }
 
     @Override

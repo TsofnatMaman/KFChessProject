@@ -21,10 +21,6 @@ public class Player implements IPlayer{
     private static int mone=0;
 
     private final List<IPiece> pieces;
-    public final List<List<Integer>> linesForPlayer = List.of(
-            List.of(0, 1), // Player 0
-            List.of(6, 7)  // Player 1
-    );
     private boolean isFailed;
 
     /**
@@ -38,7 +34,7 @@ public class Player implements IPlayer{
 
         pieces = new ArrayList<>();
 
-        for(int i:linesForPlayer.get(id))
+        for(int i:BoardConfig.rowsOfPlayer.get(id))
             for(int j=0; j<8; j++)
                 this.pieces.add(PiecesFactory.createPieceByCode(LoadPieces.board[i][j],new Position(i, j), bc));
 

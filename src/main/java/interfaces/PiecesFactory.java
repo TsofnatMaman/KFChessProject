@@ -56,7 +56,7 @@ public class PiecesFactory {
 
             // Step 2 – Load each state
             for (File stateFolder : subdirs) {
-                String stateName = stateFolder.getName();
+                EState stateName = EState.getValueOf(stateFolder.getName());
                 String configPath = basePath + stateName + "/config.json";
                 InputStream is = PiecesFactory.class.getResourceAsStream(configPath);
                 if (is == null) {
@@ -68,7 +68,7 @@ public class PiecesFactory {
                 JsonNode root = mapper.readTree(is);
                 JsonNode physicsNode = root.path("physics");
                 double speed = physicsNode.path("speed_m_per_sec").asDouble(0.0);
-                EState nextState = EState.valueOf(physicsNode.path("next_state_when_finished").asText(stateName).toUpperCase());
+                EState nextState = EState.getValueOf(physicsNode.path("next_state_when_finished").asText(stateName.toString()));
 
                 IPhysicsData physics = new PhysicsData(speed, nextState);
 
@@ -76,7 +76,7 @@ public class PiecesFactory {
                 int fps = graphicsNode.path("frames_per_sec").asInt(1);
                 boolean isLoop = graphicsNode.path("is_loop").asBoolean(true);
 
-                BufferedImage[] sprites = GraphicsLoader.loadAllSprites(code, EState.valueOf(stateName.toUpperCase()));
+                BufferedImage[] sprites = GraphicsLoader.loadAllSprites(code, stateName);
                 if (sprites.length == 0) {
                     System.err.println("No sprites for state: " + stateName);
                     LogUtils.logDebug("No sprites for state: " + stateName);
@@ -85,7 +85,7 @@ public class PiecesFactory {
 
                 IGraphicsData graphics = new GraphicsData(sprites, fps, isLoop);
                 IState state = new State(stateName, pos, pos, TILE_SIZE, physics, graphics);
-                states.put(EState.valueOf(stateName.toUpperCase()), state);
+                states.put(stateName, state);
             }
 
             if (states.isEmpty()) {

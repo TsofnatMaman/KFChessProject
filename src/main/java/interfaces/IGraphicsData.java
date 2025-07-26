@@ -4,21 +4,56 @@ import pieces.Position;
 
 import java.awt.image.BufferedImage;
 
+/**
+ * Interface for graphics data operations for piece animation.
+ */
 public interface IGraphicsData {
 
-    public void reset(EState state, Position to) ;
+    /**
+     * Resets the animation to the first frame.
+     * @param state The new state
+     * @param to The target position
+     */
+    void reset(EState state, Position to);
 
-    public void update() ;
+    /**
+     * Updates the animation frame based on elapsed time.
+     */
+    void update();
 
-    public boolean isAnimationFinished();
+    /**
+     * Checks if the animation has finished (for non-looping states).
+     * @return true if finished, false otherwise
+     */
+    boolean isAnimationFinished();
 
-    public int getCurrentNumFrame();
+    /**
+     * Gets the current frame number.
+     * @return The current frame index
+     */
+    int getCurrentNumFrame();
 
-    public int getTotalFrames();
+    /**
+     * Gets the total number of frames.
+     * @return The total number of frames
+     */
+    int getTotalFrames();
 
-    public double getFramesPerSec();
+    /**
+     * Gets the frames per second for the animation.
+     * @return Frames per second
+     */
+    double getFramesPerSec();
 
-    public boolean isLoop();
+    /**
+     * Returns true if the animation is looping.
+     * @return true if looping, false otherwise
+     */
+    boolean isLoop();
 
-    public BufferedImage getCurrentFrame() ;
+    /**
+     * Gets the current frame image.
+     * @return The current frame as BufferedImage
+     */
+    BufferedImage getCurrentFrame();
 }

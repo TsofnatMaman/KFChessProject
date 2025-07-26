@@ -21,6 +21,8 @@ public class Moves {
 
         /**
          * Constructs a move with the given delta x and delta y.
+         * @param dx Delta x (row difference)
+         * @param dy Delta y (column difference)
          */
         Move(int dx, int dy) {
             this.dx = dx;
@@ -29,6 +31,7 @@ public class Moves {
 
         /**
          * Gets the delta x of the move.
+         * @return Delta x value
          */
         public int getDx() {
             return dx;
@@ -36,6 +39,7 @@ public class Moves {
 
         /**
          * Gets the delta y of the move.
+         * @return Delta y value
          */
         public int getDy() {
             return dy;

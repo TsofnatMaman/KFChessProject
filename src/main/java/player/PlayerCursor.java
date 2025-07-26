@@ -16,6 +16,8 @@ public class PlayerCursor implements IPlayerCursor {
 
     /**
      * Constructs a PlayerCursor for selecting pieces.
+     * @param pos The initial position of the cursor
+     * @param color The color used to draw the cursor
      */
     public PlayerCursor(Position pos, Color color) {
         ROWS=8;
@@ -79,6 +81,7 @@ public class PlayerCursor implements IPlayerCursor {
 
     /**
      * Gets the current row of the cursor.
+     * @return The row index
      */
     @Override
     public int getRow() {
@@ -87,6 +90,7 @@ public class PlayerCursor implements IPlayerCursor {
 
     /**
      * Gets the current column of the cursor.
+     * @return The column index
      */
     @Override
     public int getCol() {
@@ -95,6 +99,7 @@ public class PlayerCursor implements IPlayerCursor {
 
     /**
      * Gets the current position of the cursor.
+     * @return The position object
      */
     @Override
     public Position getPosition(){

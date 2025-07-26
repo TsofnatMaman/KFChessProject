@@ -18,12 +18,12 @@ public class Main {
             JFrame frame = new JFrame("KFChess");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            BoardConfig borderConfig = new BoardConfig(8,8,64*8,64*8);
+            BoardConfig boardConfig = new BoardConfig(8,8,64*8,64*8);
 
-            IPlayer p1 = new Player(new PlayerCursor(new Position(0,0), Color.RED), borderConfig);
-            IPlayer p2 = new Player(new PlayerCursor(new Position(7,7),Color.BLUE), borderConfig);
+            IPlayer p1 = new Player(new PlayerCursor(new Position(0,0), Color.RED), boardConfig);
+            IPlayer p2 = new Player(new PlayerCursor(new Position(7,7),Color.BLUE), boardConfig);
 
-            IGame game = new Game(borderConfig ,p1, p2);
+            IGame game = new Game(boardConfig ,p1, p2);
             GameView gameView = new GameView(game);
             
             // Add debug prints
