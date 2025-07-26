@@ -26,7 +26,7 @@ public class Board implements IBoard {
      */
     public Board(BoardConfig bc, IPlayer[] players) {
         boardConfig = bc;
-        this.boardGrid = new IPiece[bc.numRows][bc.numCols];
+        this.boardGrid = new IPiece[bc.numRowsCols.getX()][bc.numRowsCols.getY()];
         this.players = players;
 
         for (IPlayer p : players)
@@ -125,8 +125,8 @@ public class Board implements IBoard {
      */
     public void updateAll() {
         // Step 1 - Reset previous positions
-        for (int row = 0; row < boardConfig.numRows; row++) {
-            for (int col = 0; col < boardConfig.numCols; col++) {
+        for (int row = 0; row < boardConfig.numRowsCols.getX(); row++) {
+            for (int col = 0; col < boardConfig.numRowsCols.getY(); col++) {
                 IPiece piece = boardGrid[row][col];
                 if (piece != null) {
                     int newRow = piece.getRow();
@@ -198,7 +198,7 @@ public class Board implements IBoard {
      */
     @Override
     public boolean isInBounds(int r, int c) {
-        return r >= 0 && r < boardConfig.numRows && c >= 0 && c < boardConfig.numCols;
+        return r >= 0 && r < boardConfig.numRowsCols.getX() && c >= 0 && c < boardConfig.numRowsCols.getY();
     }
 
     /**
@@ -291,7 +291,7 @@ public class Board implements IBoard {
      */
     @Override
     public int getCOLS() {
-        return boardConfig.numCols;
+        return boardConfig.numRowsCols.getY();
     }
 
     /**
@@ -299,7 +299,7 @@ public class Board implements IBoard {
      */
     @Override
     public int getROWS() {
-        return boardConfig.numRows;
+        return boardConfig.numRowsCols.getX();
     }
 
     /**

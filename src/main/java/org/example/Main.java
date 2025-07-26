@@ -1,6 +1,7 @@
 package org.example;
 
 import board.BoardConfig;
+import board.Dimension;
 import game.Game;
 import interfaces.IGame;
 import interfaces.IPlayer;
@@ -18,7 +19,7 @@ public class Main {
             JFrame frame = new JFrame("KFChess");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            BoardConfig boardConfig = new BoardConfig(8,8,64*8,64*8);
+            BoardConfig boardConfig = new BoardConfig(new Dimension(8),new Dimension(64*8));
 
             IPlayer p1 = new Player(new PlayerCursor(new Position(0,0), Color.RED), boardConfig);
             IPlayer p2 = new Player(new PlayerCursor(new Position(7,7),Color.BLUE), boardConfig);
