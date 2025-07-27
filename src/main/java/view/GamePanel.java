@@ -38,11 +38,9 @@ public class GamePanel extends JPanel {
         }
 
         // Players info panels
-        player1Panel = new PlayerInfoPanel();
-        player2Panel = new PlayerInfoPanel();
+        player1Panel = new PlayerInfoPanel(model.getPlayer1());
+        player2Panel = new PlayerInfoPanel(model.getPlayer2());
 
-        player1Panel.setPlayerName(model.getPlayer1().getName());
-        player2Panel.setPlayerName(model.getPlayer2().getName());
 
         // צבע שקוף קליל או לבן עם אלפא
         Color semiTransparent = new Color(255, 255, 255, 180);

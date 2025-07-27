@@ -1,14 +1,18 @@
 package events.listeners;
 
+import events.EventPublisher;
 import events.GameEvent;
 import events.IEventListener;
+import events.SoundManager;
 
 public class JumpsLogger implements IEventListener {
+
+    public JumpsLogger(){
+        EventPublisher.getInstance().subscribe(GameEvent.PIECE_JUMP, this);
+    }
+
     @Override
     public void onEvent(GameEvent event) {
-        if (event.type.equals(GameEvent.PIECE_MOVED)) {
-            String jumpDescription = (String) event.data;
-            System.out.println("Move: " + jumpDescription);
-        }
+        SoundManager.playSound("jump.wav");
     }
 }

@@ -1,5 +1,8 @@
 package board;
 
+import events.EventPublisher;
+import events.GameEvent;
+import events.listeners.ActionData;
 import interfaces.*;
 import pieces.EPieceType;
 import pieces.Position;
@@ -121,6 +124,7 @@ public class Board implements IBoard {
      * This method resets previous positions, updates piece states,
      * and handles captures before and after movement.
      */
+    //TODO:understand
     public void updateAll() {
         // Step 1 - Reset previous positions
         resetPreviousPositions();
@@ -201,6 +205,7 @@ public class Board implements IBoard {
 
     private void logCapture(String message, IPiece piece) {
         String mes = message + ": " + piece.getId();
+        EventPublisher.getInstance().publish(GameEvent.PIECE_CAPTURED, new GameEvent(GameEvent.PIECE_CAPTURED, new ActionData(-1 ,"score update")));
         LogUtils.logDebug(mes);
     }
 

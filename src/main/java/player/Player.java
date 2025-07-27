@@ -23,6 +23,7 @@ public class Player implements IPlayer{
     private static int mone=0;
 
     private final List<IPiece> pieces;
+    private int score;
     private boolean isFailed;
 
     /**
@@ -36,10 +37,14 @@ public class Player implements IPlayer{
         this.name = name;
 
         pieces = new ArrayList<>();
+        score = 0;
 
         for(int i:BoardConfig.rowsOfPlayer.get(id))
-            for(int j=0; j<8; j++)
-                this.pieces.add(PiecesFactory.createPieceByCode(EPieceType.valueOf(LoadPieces.board[i][j].charAt(0)+""),id,new Position(i, j), bc));
+            for(int j=0; j<8; j++) {
+                IPiece p = PiecesFactory.createPieceByCode(EPieceType.valueOf(LoadPieces.board[i][j].charAt(0) + ""), id, new Position(i, j), bc);
+                this.pieces.add(p);
+                score += p.getType().getScore();
+            }
 
     }
 
@@ -104,6 +109,7 @@ public class Player implements IPlayer{
     @Override
     public void markPieceCaptured(IPiece p){
         p.markCaptured();
+        score -= p.getType().getScore();
         if(p.getType() == EPieceType.K)
             isFailed = true;
     }
@@ -140,7 +146,7 @@ public class Player implements IPlayer{
 
     @Override
     public int getScore(){
-        return 0;
+        return score;
     }
 
 }

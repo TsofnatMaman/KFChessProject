@@ -2,6 +2,9 @@ package game;
 
 import board.Board;
 import board.BoardConfig;
+import events.listeners.CapturedLogger;
+import events.listeners.JumpsLogger;
+import events.listeners.MovesLogger;
 import interfaces.ICommand;
 import interfaces.*;
 
@@ -35,6 +38,10 @@ public class Game implements IGame {
         this.player1 = player1;
         this.player2 = player2;
         commandQueue = new LinkedList<>();
+
+        MovesLogger movesLogger = new MovesLogger();
+        JumpsLogger jumpsLogger = new JumpsLogger();
+        CapturedLogger capturedLogger = new CapturedLogger();
     }
 
     /**
