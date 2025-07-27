@@ -123,6 +123,16 @@ public class Board implements IBoard {
      */
     public void updateAll() {
         // Step 1 - Reset previous positions
+        resetPreviousPositions();
+
+        // Step 2 - Update state and handle captures before movement
+        updatePiecesAndHandlePreMoveCaptures();
+
+        // Step 3 - Handle captures after landing and update board positions
+        handlePostMoveCapturesAndUpdateBoard();
+    }
+
+    private void resetPreviousPositions() {
         for (int row = 0; row < boardConfig.numRowsCols.getX(); row++) {
             for (int col = 0; col < boardConfig.numRowsCols.getY(); col++) {
                 IPiece piece = boardGrid[row][col];
@@ -135,10 +145,11 @@ public class Board implements IBoard {
                 }
             }
         }
+    }
 
-        // Step 2 - Update state and handle captures before movement
-        for (IPlayer p : players) {
-            for (IPiece piece : p.getPieces()) {
+    private void updatePiecesAndHandlePreMoveCaptures() {
+        for (IPlayer player : players) {
+            for (IPiece piece : player.getPieces()) {
                 if (piece.isCaptured()) continue;
 
                 if (piece.getCurrentState().isActionFinished()) {
@@ -147,14 +158,12 @@ public class Board implements IBoard {
 
                     IPiece target = boardGrid[targetRow][targetCol];
                     if (target != null && target != piece && !target.isCaptured() && target.canMoveOver()) {
-                        if (target.getCurrentStateName() == EState.JUMP){
+                        if (target.getCurrentStateName() == EState.JUMP) {
                             players[piece.getPlayer()].markPieceCaptured(piece);
-                            System.out.println("Captured before move: " + piece.getId());
-                            LogUtils.logDebug("Captured before move: " + piece.getId());
+                            logCapture("Captured before move", piece);
                         } else {
                             players[target.getPlayer()].markPieceCaptured(target);
-                            System.out.println("Captured before move: " + target.getId());
-                            LogUtils.logDebug("Captured before move: " + target.getId());
+                            logCapture("Captured before move", target);
                         }
                     }
                 }
@@ -162,10 +171,11 @@ public class Board implements IBoard {
                 piece.update();
             }
         }
+    }
 
-        // Step 3 - Handle captures after landing and update board positions
-        for (IPlayer p : players) {
-            for (IPiece piece : p.getPieces()) {
+    private void handlePostMoveCapturesAndUpdateBoard() {
+        for (IPlayer player : players) {
+            for (IPiece piece : player.getPieces()) {
                 if (piece.isCaptured()) continue;
 
                 int row = piece.getRow();
@@ -173,16 +183,13 @@ public class Board implements IBoard {
 
                 IPiece existing = boardGrid[row][col];
                 if (existing != null && existing != piece && !existing.isCaptured()) {
-                    System.out.println(existing.getCurrentStateName());
-                    LogUtils.logDebug("State: " + existing.getCurrentStateName());
+                    logState("State", existing.getCurrentStateName());
                     if (existing.getCurrentStateName() != EState.JUMP) {
                         players[existing.getPlayer()].markPieceCaptured(existing);
-                        System.out.println("Captured on landing: " + existing.getId());
-                        LogUtils.logDebug("Captured on landing: " + existing.getId());
+                        logCapture("Captured on landing", existing);
                     } else {
                         players[piece.getPlayer()].markPieceCaptured(piece);
-                        System.out.println("No capture: piece not jumping on landing");
-                        LogUtils.logDebug("No capture: piece not jumping on landing");
+                        logCapture("No capture: piece not jumping on landing", piece);
                     }
                 }
 
@@ -190,6 +197,19 @@ public class Board implements IBoard {
             }
         }
     }
+
+
+    private void logCapture(String message, IPiece piece) {
+        String mes = message + ": " + piece.getId();
+        LogUtils.logDebug(mes);
+    }
+
+    private void logState(String message, EState state) {
+        String mes = message + ": " + state;
+        LogUtils.logDebug(mes);
+    }
+
+
 
     /**
      * Checks if the specified row and column are within board bounds.

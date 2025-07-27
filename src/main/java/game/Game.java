@@ -103,9 +103,9 @@ public class Game implements IGame {
     @Override
     public IPlayer win(){
         if(board.getPlayers()[0].isFailed())
-            return player1;
-        if(board.getPlayers()[1].isFailed())
             return player2;
+        if(board.getPlayers()[1].isFailed())
+            return player1;
         return null;
     }
 }

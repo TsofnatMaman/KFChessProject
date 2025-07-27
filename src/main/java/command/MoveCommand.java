@@ -1,5 +1,7 @@
 package command;
 
+import events.EventPublisher;
+import events.GameEvent;
 import interfaces.*;
 import pieces.Position;
 import utils.LogUtils;
@@ -35,12 +37,18 @@ public class MoveCommand implements ICommand {
     @Override
     public void execute() {
         if (!board.isMoveLegal(from, to)) {
-            System.err.println("Illegal move from " + from + " to " + to);
-            LogUtils.logDebug("Illegal move from " + from + " to " + to);
+            String mes = "Illegal move from " + from + " to " + to;
+            EventPublisher.getInstance()
+                            .publish(GameEvent.PIECE_MOVED,
+                                    new GameEvent(GameEvent.PIECE_MOVED ,mes));
+            LogUtils.logDebug(mes);
             return;
         }
-        System.out.println("Moving from " + from + " to " + to);
-        LogUtils.logDebug("Moving from " + from + " to " + to);
+        String mes = "Moving from " + from + " to " + to;
+        EventPublisher.getInstance()
+                        .publish(GameEvent.PIECE_MOVED,
+                                new GameEvent(GameEvent.PIECE_MOVED, mes));
+        LogUtils.logDebug(mes);
         board.move(from, to);
     }
 }

@@ -160,4 +160,14 @@ public class Piece implements IPiece {
     public boolean canMoveOver(){
         return currentStateName.isCanMoveOver();
     }
+
+    @Override
+    public String toString() {
+        return "Piece{" +
+                "id='" + id + '\'' +
+                ", type=" + type +
+                ", currentStateName=" + currentStateName +
+                ", pos=" + pos +
+                '}';
+    }
 }

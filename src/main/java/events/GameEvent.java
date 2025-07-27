@@ -10,6 +10,7 @@ public class GameEvent {
     }
 
     public static final String PIECE_MOVED = "pieceMoved";
+    public static final String PIECE_JUMP = "pieceJump";
     public static final String PIECE_CAPTURED = "pieceCaptured";
     public static final String GAME_STARTED = "gameStarted";
     public static final String GAME_ENDED = "gameEnded";

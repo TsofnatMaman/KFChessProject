@@ -1,5 +1,7 @@
 package command;
 
+import events.EventPublisher;
+import events.GameEvent;
 import interfaces.*;
 
 /**
@@ -31,5 +33,8 @@ public class JumpCommand implements ICommand {
         if(!board.isJumpLegal(p))
             return;
         board.jump(p);
+        EventPublisher.getInstance()
+                .publish(GameEvent.PIECE_JUMP,
+                        new GameEvent(GameEvent.PIECE_JUMP, "piece "+p+" jumping"));
     }
 }
