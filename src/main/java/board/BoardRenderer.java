@@ -18,8 +18,8 @@ public class BoardRenderer {
      * @param panelHeight Height of the panel
      */
     public static void draw(Graphics g, IBoard board, int panelWidth, int panelHeight) {
-        int squareWidth = panelWidth / board.getROWS();
-        int squareHeight = panelHeight / board.getCOLS();
+        int squareWidth = panelWidth / board.getCOLS();
+        int squareHeight = panelHeight / board.getROWS();
 
         for (int row = 0; row < board.getROWS(); row++) {
             for (int col = 0; col < board.getCOLS(); col++) {

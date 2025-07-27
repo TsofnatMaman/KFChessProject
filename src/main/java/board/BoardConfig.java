@@ -34,4 +34,8 @@ public class BoardConfig {
         else
             return 1;
     }
+
+    public boolean isInBounds(int r, int c){
+        return r >= 0 && r < numRowsCols.getX() && c >= 0 && c < numRowsCols.getY();
+    }
 }

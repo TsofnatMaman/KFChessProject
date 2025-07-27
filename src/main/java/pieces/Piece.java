@@ -35,9 +35,7 @@ public class Piece implements IPiece {
 
     @Override
     public int getPlayer() {
-        if (BoardConfig.rowsOfPlayer.get(0).contains(Integer.parseInt(this.getId().split(",")[0]))) return 0;
-        if (BoardConfig.rowsOfPlayer.get(1).contains(Integer.parseInt(this.getId().split(",")[0]))) return 1;
-        throw new IllegalStateException("Invalid row: " + this.pos.r);
+        return BoardConfig.getPlayerOf(Integer.parseInt(this.getId().split(",")[0]));
     }
 
 

@@ -83,10 +83,7 @@ public class Board implements IBoard {
      */
     @Override
     public int getPlayerOf(int row) {
-        if (boardConfig.rowsOfPlayer.get(0).contains(row))
-            return 0;
-        else
-            return 1;
+        return BoardConfig.getPlayerOf(row);
     }
 
     /**
@@ -199,7 +196,7 @@ public class Board implements IBoard {
      */
     @Override
     public boolean isInBounds(int r, int c) {
-        return r >= 0 && r < boardConfig.numRowsCols.getX() && c >= 0 && c < boardConfig.numRowsCols.getY();
+        return boardConfig.isInBounds(r,c);
     }
 
     /**
@@ -224,15 +221,18 @@ public class Board implements IBoard {
 
         // Check if the move is in the legal move list
         List<Moves.Move> moves = fromPiece.getMoves().getMoves();
-        int dx = to.getRow() - from.getRow();
+
+        int player = BoardConfig.getPlayerOf(Integer.parseInt(fromPiece.getId().split(",")[0]));
+        int dx = (to.getRow() - from.getRow()) * (player == 0 ? 1 : -1);
         int dy = to.getCol() - from.getCol();
+
         boolean isLegal = moves.stream().anyMatch(m -> m.getDx() == dx && m.getDy() == dy);
 
         if (!isLegal)
             return false;
 
         // Check path clearance (except knights)
-        if (fromPiece.getType() != EPieceType.N && !isPathClear(from, to)) {
+        if (!fromPiece.getType().isCanSkip() && !isPathClear(from, to)) {
             isPathClear(from, to);
             return false;
         }

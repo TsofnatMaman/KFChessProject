@@ -83,6 +83,7 @@ public class Player implements IPlayer{
     /**
      * Sets the pending position for selection.
      */
+
     @Override
     public void setPendingFrom(Position pending) {
         this.pending = pending == null? null : pending.copy();
@@ -103,7 +104,7 @@ public class Player implements IPlayer{
     @Override
     public void markPieceCaptured(IPiece p){
         p.markCaptured();
-        if(p.getType() != EPieceType.K)
+        if(p.getType() == EPieceType.K)
             isFailed = true;
     }
 
