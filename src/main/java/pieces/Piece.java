@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class Piece implements IPiece {
     private final String id;
-    private final String type;
+    private final EPieceType type;
     private Map<EState, IState> states;
     private EState currentStateName;
     private IState currentState;
@@ -21,7 +21,7 @@ public class Piece implements IPiece {
 
     private boolean wasCaptured = false;
 
-    public Piece(String type, Map<EState, IState> states, EState initialState, Position pos) throws IOException {
+    public Piece(EPieceType type, Map<EState, IState> states, EState initialState, Position pos) throws IOException {
         id = pos.getRow() + "," + pos.getCol();
         this.states = states;
         this.currentStateName = initialState;
@@ -48,7 +48,7 @@ public class Piece implements IPiece {
     }
 
     @Override
-    public String getType() {
+    public EPieceType getType() {
         return type;
     }
 

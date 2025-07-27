@@ -27,4 +27,11 @@ public class BoardConfig {
         double tileH = (double) panelSize.getX() / numsRowsCols.getX();
         this.tileSize = Math.min(tileW, tileH);
     }
+
+    public static int getPlayerOf(int row){
+        if (rowsOfPlayer.get(0).contains(row))
+            return 0;
+        else
+            return 1;
+    }
 }

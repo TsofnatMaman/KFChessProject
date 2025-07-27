@@ -101,11 +101,11 @@ public class Game implements IGame {
      * @return The winner's player index, or -1 if no winner
      */
     @Override
-    public int win(){
+    public IPlayer win(){
         if(board.getPlayers()[0].isFailed())
-            return 1;
+            return player1;
         if(board.getPlayers()[1].isFailed())
-            return 0;
-        return -1;
+            return player2;
+        return null;
     }
 }

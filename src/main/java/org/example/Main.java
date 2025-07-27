@@ -8,7 +8,7 @@ import interfaces.IPlayer;
 import pieces.Position;
 import player.Player;
 import player.PlayerCursor;
-import view.GameView;
+import view.GamePanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,15 +21,15 @@ public class Main {
 
             BoardConfig boardConfig = new BoardConfig(new Dimension(8),new Dimension(64*8));
 
-            IPlayer p1 = new Player(new PlayerCursor(new Position(0,0), Color.RED), boardConfig);
-            IPlayer p2 = new Player(new PlayerCursor(new Position(7,7),Color.BLUE), boardConfig);
+            IPlayer p1 = new Player("aaa",new PlayerCursor(new Position(0,0), Color.RED), boardConfig);
+            IPlayer p2 = new Player("bbb",new PlayerCursor(new Position(7,7),Color.BLUE), boardConfig);
 
             IGame game = new Game(boardConfig ,p1, p2);
-            GameView gameView = new GameView(game);
-            
+            GamePanel gameView = new GamePanel(game);
+
             // Add debug prints
             System.out.println("Debug: Initial game state setup");
-            
+
             gameView.run();
 
             frame.setContentPane(gameView); // מכניס את המשחק

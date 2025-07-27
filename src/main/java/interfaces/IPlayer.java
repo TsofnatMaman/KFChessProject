@@ -20,6 +20,8 @@ public interface IPlayer {
      */
     public int getId();
 
+    String getName();
+
     /**
      * Gets the player's cursor.
      * @return The player cursor
@@ -56,4 +58,6 @@ public interface IPlayer {
      * @return ICommand representing the action, or null if no action
      */
     public ICommand handleSelection(IBoard board);
+
+    int getScore();
 }

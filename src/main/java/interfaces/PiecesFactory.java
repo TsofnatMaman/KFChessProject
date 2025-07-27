@@ -5,6 +5,7 @@ import graphics.GraphicsLoader;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import pieces.EPieceType;
 import pieces.Piece;
 import pieces.Position;
 import state.GraphicsData;
@@ -34,12 +35,12 @@ public class PiecesFactory {
      * @param config Board configuration
      * @return Piece instance or null if failed
      */
-    public static Piece createPieceByCode(String code, Position pos, BoardConfig config) {
+    public static Piece createPieceByCode(EPieceType code, Position pos, BoardConfig config) {
         TILE_SIZE = config.tileSize;
 
         // ...continue as previously built, using tileSize
         Map<EState, IState> states = new HashMap<>();
-        String basePath = "/pieces/" + code + "/states/";
+        String basePath = "/pieces/" + code.getVal() + "/states/";
 
         try {
             // Step 1 – Find all existing states in the states directory
@@ -76,7 +77,7 @@ public class PiecesFactory {
                 int fps = graphicsNode.path("frames_per_sec").asInt(1);
                 boolean isLoop = graphicsNode.path("is_loop").asBoolean(true);
 
-                BufferedImage[] sprites = GraphicsLoader.loadAllSprites(code, stateName);
+                BufferedImage[] sprites = GraphicsLoader.loadAllSprites(code, BoardConfig.getPlayerOf(pos.getRow()), stateName);
                 if (sprites.length == 0) {
                     System.err.println("No sprites for state: " + stateName);
                     LogUtils.logDebug("No sprites for state: " + stateName);
@@ -89,7 +90,7 @@ public class PiecesFactory {
             }
 
             if (states.isEmpty()) {
-                LogUtils.logDebug("No states loaded for piece: " + code);
+                LogUtils.logDebug("No states loaded for piece: " + code.getVal());
                 return null;
             }
 

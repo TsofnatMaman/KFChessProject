@@ -1,5 +1,6 @@
 package interfaces;
 
+import pieces.EPieceType;
 import pieces.Position;
 
 import java.awt.geom.Point2D;
@@ -26,7 +27,7 @@ public interface IPiece {
      * Gets the type of the piece.
      * @return The piece type
      */
-    String getType();
+    EPieceType getType();
 
     /**
      * Sets the state of the piece.

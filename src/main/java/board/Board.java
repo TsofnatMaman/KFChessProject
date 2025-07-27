@@ -1,6 +1,7 @@
 package board;
 
 import interfaces.*;
+import pieces.EPieceType;
 import pieces.Position;
 import utils.LogUtils;
 
@@ -231,7 +232,7 @@ public class Board implements IBoard {
             return false;
 
         // Check path clearance (except knights)
-        if (fromPiece.getType().charAt(0) != 'N' && !isPathClear(from, to)) {
+        if (fromPiece.getType() != EPieceType.N && !isPathClear(from, to)) {
             isPathClear(from, to);
             return false;
         }

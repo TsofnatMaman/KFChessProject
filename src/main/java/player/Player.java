@@ -5,6 +5,7 @@ import command.JumpCommand;
 import command.MoveCommand;
 import interfaces.*;
 import game.LoadPieces;
+import pieces.EPieceType;
 import pieces.Position;
 import utils.LogUtils;
 
@@ -16,6 +17,7 @@ import java.util.List;
  */
 public class Player implements IPlayer{
     private final int id;
+    private String name;
     private final IPlayerCursor cursor;
     private Position pending;
     private static int mone=0;
@@ -26,17 +28,18 @@ public class Player implements IPlayer{
     /**
      * Constructs a Player, initializes pieces and status.
      */
-    public Player(IPlayerCursor pc, BoardConfig bc){
+    public Player(String name ,IPlayerCursor pc, BoardConfig bc){
         id = mone++;
         this.cursor = pc;
         pending=null;
         isFailed = false;
+        this.name = name;
 
         pieces = new ArrayList<>();
 
         for(int i:BoardConfig.rowsOfPlayer.get(id))
             for(int j=0; j<8; j++)
-                this.pieces.add(PiecesFactory.createPieceByCode(LoadPieces.board[i][j],new Position(i, j), bc));
+                this.pieces.add(PiecesFactory.createPieceByCode(EPieceType.valueOf(LoadPieces.board[i][j].charAt(0)+""),new Position(i, j), bc));
 
     }
 
@@ -54,6 +57,11 @@ public class Player implements IPlayer{
     @Override
     public int getId() {
         return id;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     /**
@@ -95,7 +103,7 @@ public class Player implements IPlayer{
     @Override
     public void markPieceCaptured(IPiece p){
         p.markCaptured();
-        if(p.getType().charAt(0) == 'K')
+        if(p.getType() != EPieceType.K)
             isFailed = true;
     }
 
@@ -128,4 +136,10 @@ public class Player implements IPlayer{
 
         return null;
     }
+
+    @Override
+    public int getScore(){
+        return 0;
+    }
+
 }

@@ -1,5 +1,7 @@
 package interfaces;
 
+import pieces.EPieceType;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,10 +63,10 @@ public class Moves {
      * @param pieceType The type of the piece
      * @throws IOException If resource not found or error reading
      */
-    public Moves(String pieceType) throws IOException {
+    public Moves(EPieceType pieceType) throws IOException {
         moves = new ArrayList<>();
 
-        String resourcePath = "pieces/" + pieceType + "/moves.txt";
+        String resourcePath = "pieces/" + pieceType.getVal() + "/moves.txt";
         try (InputStream is = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
             if (is == null) {
                 throw new IOException("Resource not found: " + resourcePath);
