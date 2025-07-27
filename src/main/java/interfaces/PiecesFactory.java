@@ -35,7 +35,7 @@ public class PiecesFactory {
      * @param config Board configuration
      * @return Piece instance or null if failed
      */
-    public static Piece createPieceByCode(EPieceType code, Position pos, BoardConfig config) {
+    public static Piece createPieceByCode(EPieceType code, int playerId, Position pos, BoardConfig config) {
         TILE_SIZE = config.tileSize;
 
         // ...continue as previously built, using tileSize
@@ -96,7 +96,7 @@ public class PiecesFactory {
 
             // Step 3 – Create the Piece with the first state as default
             EState initialState = EState.IDLE;
-            return new Piece(code, states, initialState, pos);
+            return new Piece(code,playerId, states, initialState, pos);
 
         } catch (Exception e) {
             e.printStackTrace();

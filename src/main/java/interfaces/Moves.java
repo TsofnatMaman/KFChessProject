@@ -63,10 +63,10 @@ public class Moves {
      * @param pieceType The type of the piece
      * @throws IOException If resource not found or error reading
      */
-    public Moves(EPieceType pieceType) throws IOException {
+    public Moves(EPieceType pieceType, int playerId) throws IOException {
         moves = new ArrayList<>();
 
-        String resourcePath = "pieces/" + pieceType.getVal() + "/moves.txt";
+        String resourcePath = "pieces/" + pieceType.getVal() + "/moves"+playerId+".txt";
         try (InputStream is = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
             if (is == null) {
                 throw new IOException("Resource not found: " + resourcePath);

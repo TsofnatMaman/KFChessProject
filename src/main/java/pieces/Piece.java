@@ -21,7 +21,7 @@ public class Piece implements IPiece {
 
     private boolean wasCaptured = false;
 
-    public Piece(EPieceType type, Map<EState, IState> states, EState initialState, Position pos) throws IOException {
+    public Piece(EPieceType type, int playerId, Map<EState, IState> states, EState initialState, Position pos) throws IOException {
         id = pos.getRow() + "," + pos.getCol();
         this.states = states;
         this.currentStateName = initialState;
@@ -30,7 +30,7 @@ public class Piece implements IPiece {
 
         this.type = type;
 
-        moves = new Moves(type);
+        moves = new Moves(type, playerId);
     }
 
     @Override

@@ -222,8 +222,7 @@ public class Board implements IBoard {
         // Check if the move is in the legal move list
         List<Moves.Move> moves = fromPiece.getMoves().getMoves();
 
-        int player = BoardConfig.getPlayerOf(Integer.parseInt(fromPiece.getId().split(",")[0]));
-        int dx = (to.getRow() - from.getRow()) * (player == 0 ? 1 : -1);
+        int dx = to.getRow() - from.getRow();
         int dy = to.getCol() - from.getCol();
 
         boolean isLegal = moves.stream().anyMatch(m -> m.getDx() == dx && m.getDy() == dy);

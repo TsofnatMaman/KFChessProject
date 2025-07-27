@@ -39,7 +39,7 @@ public class Player implements IPlayer{
 
         for(int i:BoardConfig.rowsOfPlayer.get(id))
             for(int j=0; j<8; j++)
-                this.pieces.add(PiecesFactory.createPieceByCode(EPieceType.valueOf(LoadPieces.board[i][j].charAt(0)+""),new Position(i, j), bc));
+                this.pieces.add(PiecesFactory.createPieceByCode(EPieceType.valueOf(LoadPieces.board[i][j].charAt(0)+""),id,new Position(i, j), bc));
 
     }
 
