@@ -4,14 +4,10 @@ import events.EventPublisher;
 import events.GameEvent;
 import events.IEventListener;
 import events.listeners.ActionData;
-import events.listeners.MovesLogger;
 import interfaces.IPlayer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Panel for displaying player information such as name, score, and moves.
  */

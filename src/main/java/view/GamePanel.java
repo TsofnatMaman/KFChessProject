@@ -23,15 +23,14 @@ public class GamePanel extends JPanel implements IEventListener {
     private final PlayerInfoPanel player1Panel;
     private final PlayerInfoPanel player2Panel;
     private final IGame model;
-    private Timer timer;
     private Image backgroundImage;
 
     public GamePanel(IGame model){
         this.model = model;
 
         // Set layout with gaps between regions
-        setLayout(new BorderLayout(20, 20)); // <-- רווחים בין המרכז לצדדים
-        setBorder(new EmptyBorder(20, 20, 20, 20)); // <-- רווח פנימי מהקצוות
+        setLayout(new BorderLayout(20, 20)); // Spacing between center and sides
+        setBorder(new EmptyBorder(20, 20, 20, 20)); // Internal padding from edges
 
         // Load background image
         try {

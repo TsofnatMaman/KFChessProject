@@ -21,8 +21,8 @@ public class Main {
 
             BoardConfig boardConfig = new BoardConfig(new Dimension(8),new Dimension(64*8));
 
-            IPlayer p1 = new Player("aaa",new PlayerCursor(new Position(0,0), Color.RED), boardConfig);
-            IPlayer p2 = new Player("bbb",new PlayerCursor(new Position(7,7),Color.BLUE), boardConfig);
+            IPlayer p1 = new Player("black player",new PlayerCursor(new Position(0,0), Color.RED), boardConfig);
+            IPlayer p2 = new Player("white player",new PlayerCursor(new Position(7,7),Color.BLUE), boardConfig);
 
             IGame game = new Game(boardConfig ,p1, p2);
             GamePanel gameView = new GamePanel(game);
@@ -32,7 +32,7 @@ public class Main {
 
             gameView.run();
 
-            frame.setContentPane(gameView); // מכניס את המשחק
+            frame.setContentPane(gameView);
             frame.pack();
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);

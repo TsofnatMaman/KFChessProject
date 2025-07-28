@@ -1,11 +1,11 @@
-# נתיב בסיס (הפעל מתוך pieces/)
+# Base path (run from pieces/ directory)
 $basePath = Get-Location
 
-# מציאת כל זוגות כלים: כל האותיות שיש להן גם B וגם W
+# Find all piece pairs: letters that have both B and W variants
 $blackDirs = Get-ChildItem -Directory | Where-Object { $_.Name -match '^[A-Z]B$' }
 $whiteDirs = Get-ChildItem -Directory | Where-Object { $_.Name -match '^[A-Z]W$' }
 
-# שמות האותיות שיש להן גם B וגם W
+# Names of letters that have both B and W variants
 $pieces = @()
 
 foreach ($b in $blackDirs) {

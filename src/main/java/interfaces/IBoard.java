@@ -3,6 +3,8 @@ package interfaces;
 import board.BoardConfig;
 import pieces.Position;
 
+import java.util.List;
+
 /**
  * Interface for board operations and queries.
  */
@@ -137,4 +139,6 @@ public interface IBoard {
      * @return BoardConfig object
      */
     BoardConfig getBoardConfig();
+
+    List<Position> getLegalMoves(Position selectedPosition);
 }

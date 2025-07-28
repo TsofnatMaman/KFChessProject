@@ -4,7 +4,6 @@ import interfaces.*;
 import pieces.Position;
 
 import java.awt.geom.Point2D;
-import utils.LogUtils;
 
 /**
  * Represents the state of a piece, including physics and graphics.
