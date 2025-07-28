@@ -155,8 +155,10 @@ public class Board implements IBoard {
 
     private void updatePiecesAndHandlePreMoveCaptures() {
         for (IPlayer player : players) {
-            for (IPiece piece : player.getPieces()) {
+            for(int i=0; i<player.getPieces().size(); i++){
+                IPiece piece = player.getPieces().get(i);
                 if (piece.isCaptured()) continue;
+
 
                 if (piece.getCurrentState().isActionFinished()) {
                     int targetRow = piece.getCurrentState().getTargetRow();
@@ -174,7 +176,7 @@ public class Board implements IBoard {
                     }
 
                     if(piece.getType() == EPieceType.P && (targetRow == 0 || targetRow == boardConfig.numRowsCols.getX()-1))
-                        player.replacePToQ(piece, boardConfig);
+                        player.replacePToQ(piece, new Position(targetRow, targetCol) ,boardConfig);
                 }
 
                 piece.update();

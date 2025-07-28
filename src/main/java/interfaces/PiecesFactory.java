@@ -35,7 +35,7 @@ public class PiecesFactory {
      * @param config Board configuration
      * @return Piece instance or null if failed
      */
-    public static Piece createPieceByCode(EPieceType code, int playerId, Position pos, BoardConfig config) {
+    public static Piece createPieceByCode(String id ,EPieceType code, int playerId, Position pos, BoardConfig config) {
         TILE_SIZE = config.tileSize;
 
         // ...continue as previously built, using tileSize
@@ -77,7 +77,7 @@ public class PiecesFactory {
                 int fps = graphicsNode.path("frames_per_sec").asInt(1);
                 boolean isLoop = graphicsNode.path("is_loop").asBoolean(true);
 
-                BufferedImage[] sprites = GraphicsLoader.loadAllSprites(code, BoardConfig.getPlayerOf(pos.getRow()), stateName);
+                BufferedImage[] sprites = GraphicsLoader.loadAllSprites(code, playerId, stateName);
                 if (sprites.length == 0) {
                     System.err.println("No sprites for state: " + stateName);
                     LogUtils.logDebug("No sprites for state: " + stateName);
@@ -96,12 +96,16 @@ public class PiecesFactory {
 
             // Step 3 – Create the Piece with the first state as default
             EState initialState = EState.IDLE;
-            return new Piece(code,playerId, states, initialState, pos);
+            return new Piece(id, code, playerId, states, initialState, pos);
 
         } catch (Exception e) {
             e.printStackTrace();
             LogUtils.logDebug("Exception in createPieceByCode: " + e.getMessage());
             return null;
         }
+    }
+
+    public static Piece createPieceByCode (EPieceType code,int playerId, Position pos, BoardConfig config){
+        return createPieceByCode(pos.getRow() + "," + pos.getCol(), code, playerId, pos, config);
     }
 }

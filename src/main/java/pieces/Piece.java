@@ -24,8 +24,8 @@ public class Piece implements IPiece {
 
     private boolean wasCaptured = false;
 
-    public Piece(EPieceType type, int playerId, Map<EState, IState> states, EState initialState, Position pos) throws IOException {
-        id = pos.getRow() + "," + pos.getCol();
+    public Piece(String id, EPieceType type, int playerId, Map<EState, IState> states, EState initialState, Position pos) throws IOException {
+        this.id = id;
         this.states = states;
         this.currentStateName = initialState;
         this.currentState = states.get(initialState);

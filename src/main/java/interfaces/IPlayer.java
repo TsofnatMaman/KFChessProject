@@ -62,5 +62,5 @@ public interface IPlayer {
 
     int getScore();
 
-    void replacePToQ(IPiece piece, BoardConfig bc);
+    IPiece replacePToQ(IPiece piece, Position targetPos, BoardConfig bc);
 }

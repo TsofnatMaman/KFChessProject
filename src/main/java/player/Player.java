@@ -150,9 +150,17 @@ public class Player implements IPlayer{
     }
 
     @Override
-    public void replacePToQ(IPiece piece, BoardConfig bc){
-//        pieces.remove(piece);
-//        pieces.add(PiecesFactory.createPieceByCode(EPieceType.Q, id, piece.getPos(), bc));
+    public IPiece replacePToQ(IPiece piece, Position targetPos, BoardConfig bc){
+        pieces.remove(piece);
+
+        int reversePlayer = -(BoardConfig.getPlayerOf(targetPos.getRow())-1);
+        List<Integer> reversePlayerRows = BoardConfig.rowsOfPlayer.get(reversePlayer);
+
+        IPiece queen = PiecesFactory.createPieceByCode(reversePlayerRows.getLast()+","+targetPos.getCol(), EPieceType.Q, reversePlayer, targetPos, bc);
+        pieces.add(queen);
+        score += queen.getType().getScore() - piece.getType().getScore();
+
+        return queen;
     }
 
 }
