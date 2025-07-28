@@ -5,14 +5,14 @@ import events.GameEvent;
 import events.IEventListener;
 import events.SoundManager;
 
-public class CapturedLogger implements IEventListener {
+public class GameEndLogger implements IEventListener {
 
-    public CapturedLogger(){
-        EventPublisher.getInstance().subscribe(GameEvent.PIECE_CAPTURED, this);
+    public GameEndLogger(){
+        EventPublisher.getInstance().subscribe(GameEvent.GAME_ENDED, this);
     }
 
     @Override
     public void onEvent(GameEvent event) {
-        SoundManager.playSound("capture.wav");
+        SoundManager.playSound("TADA.wav");
     }
 }

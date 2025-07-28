@@ -16,6 +16,8 @@ public interface IState {
      * @param from The starting position
      * @param to The target position
      */
+//    void reset(EState state, Position from, Position to);
+
     void reset(EState state, Position from, Position to);
 
     /**
@@ -41,29 +43,7 @@ public interface IState {
      */
     int getStartRow();
 
-    /**
-     * Gets the current position in pixels.
-     * @return The current position as Point2D.Double
-     */
     Point2D.Double getCurrentPosition();
-
-    /**
-     * Gets the current board position.
-     * @return The current board position as Point
-     */
-    Point getBoardPosition();
-
-    /**
-     * Gets the current row.
-     * @return The current row index
-     */
-    int getCurrentRow();
-
-    /**
-     * Gets the current column.
-     * @return The current column index
-     */
-    int getCurrentCol();
 
     /**
      * Gets the target row.

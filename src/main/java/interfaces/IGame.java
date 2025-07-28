@@ -1,5 +1,7 @@
 package interfaces;
 
+import game.IBoardView;
+
 /**
  * Interface for game logic and state management.
  */
@@ -45,4 +47,6 @@ public interface IGame {
      * @return The winner's player index, or -1 if no winner
      */
     IPlayer win();
+
+    void run(IBoardView bv);
 }

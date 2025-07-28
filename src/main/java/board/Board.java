@@ -4,6 +4,8 @@ import events.EventPublisher;
 import events.GameEvent;
 import events.listeners.ActionData;
 import interfaces.*;
+import moves.Data;
+import moves.Move;
 import pieces.EPieceType;
 import pieces.Position;
 import utils.LogUtils;
@@ -170,6 +172,9 @@ public class Board implements IBoard {
                             logCapture("Captured before move", target);
                         }
                     }
+
+                    if(piece.getType() == EPieceType.P && (targetRow == 0 || targetRow == boardConfig.numRowsCols.getX()-1))
+                        player.replacePToQ(piece, boardConfig);
                 }
 
                 piece.update();
@@ -245,12 +250,13 @@ public class Board implements IBoard {
             return false;
 
         // Check if the move is in the legal move list
-        List<Moves.Move> moves = fromPiece.getMoves().getMoves();
+        List<Move> moves = fromPiece.getMoves();
 
         int dx = to.getRow() - from.getRow();
         int dy = to.getCol() - from.getCol();
 
-        boolean isLegal = moves.stream().anyMatch(m -> m.getDx() == dx && m.getDy() == dy);
+        Data data = new Data(this, fromPiece, to);
+        boolean isLegal = moves.stream().anyMatch(m -> m.getDx() == dx && m.getDy() == dy && (m.getCondition() == null || m.getCondition().isCanMove(data)));
 
         if (!isLegal)
             return false;

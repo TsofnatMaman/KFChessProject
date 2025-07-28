@@ -2,7 +2,7 @@ package state;
 
 import interfaces.*;
 import pieces.Position;
-import java.awt.*;
+
 import java.awt.geom.Point2D;
 import utils.LogUtils;
 
@@ -17,7 +17,7 @@ public class State implements IState {
     private Position startPos;
     private Position targetPos;
     private long startTimeNanos;
-    private final double tileSize;
+    private final double TILE_SIZE;
 
     /**
      * Constructs a State object representing a piece's state.
@@ -33,9 +33,9 @@ public class State implements IState {
         this.name = name;
         this.startPos = startPos;
         this.targetPos = targetPos;
-        this.tileSize = tileSize;
         this.physics = physics;
         this.graphics = graphics;
+        this.TILE_SIZE = tileSize;
         reset(EState.IDLE, startPos, null);
     }
 
@@ -55,7 +55,7 @@ public class State implements IState {
         this.startTimeNanos = System.nanoTime();
 
         if (graphics != null) graphics.reset(state, startPos);
-        if (physics != null) physics.reset(state, startPos, targetPos, tileSize, startTimeNanos);
+        if (physics != null) physics.reset(state, startPos, targetPos, TILE_SIZE, startTimeNanos);
     }
 
     /**
@@ -81,20 +81,10 @@ public class State implements IState {
             case EState.MOVE:
                 return physics.isMovementFinished();
             case EState.JUMP:
-                boolean finished = graphics != null && graphics.isAnimationFinished();
-                if (finished) {
-                    System.out.println("Jump animation finished, transitioning to: " + physics.getNextStateWhenFinished());
-                    LogUtils.logDebug("Jump animation finished, transitioning to: " + physics.getNextStateWhenFinished());
-                }
-                return finished;
+                return graphics != null && graphics.isAnimationFinished();
             case EState.SHORT_REST:
             case EState.LONG_REST:
-                boolean restFinished = graphics != null && graphics.isAnimationFinished();
-                if (restFinished) {
-                    System.out.println(name + " animation finished");
-                    LogUtils.logDebug(name + " animation finished");
-                }
-                return restFinished;
+                return graphics != null && graphics.isAnimationFinished();
             default:
                 // By default, check physics if available, otherwise graphics
                 if (physics != null)
@@ -131,33 +121,6 @@ public class State implements IState {
     @Override
     public Point2D.Double getCurrentPosition() {
         return new Point2D.Double(physics.getCurrentX(), physics.getCurrentY());
-    }
-
-    /**
-     * Gets the current board position.
-     * @return The current board position as Point
-     */
-    @Override
-    public Point getBoardPosition() {
-        return new Point((int) (physics.getCurrentX() / tileSize), (int) (physics.getCurrentY() / tileSize));
-    }
-
-    /**
-     * Gets the current row.
-     * @return The current row index
-     */
-    @Override
-    public int getCurrentRow() {
-        return (int) (physics.getCurrentY() / tileSize);
-    }
-
-    /**
-     * Gets the current column.
-     * @return The current column index
-     */
-    @Override
-    public int getCurrentCol() {
-        return (int) (physics.getCurrentX() / tileSize);
     }
 
     /**

@@ -51,7 +51,6 @@ public class PlayerInfoPanel extends JPanel implements IEventListener {
 
         EventPublisher.getInstance().subscribe(GameEvent.PIECE_MOVED, this);
         EventPublisher.getInstance().subscribe(GameEvent.PIECE_JUMP, this);
-        EventPublisher.getInstance().subscribe(GameEvent.GAME_ENDED, this);
         EventPublisher.getInstance().subscribe(GameEvent.GAME_STARTED, this);
         EventPublisher.getInstance().subscribe(GameEvent.PIECE_CAPTURED, this);
     }

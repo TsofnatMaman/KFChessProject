@@ -2,12 +2,17 @@ package game;
 
 import board.Board;
 import board.BoardConfig;
+import events.EventPublisher;
+import events.GameEvent;
 import events.listeners.CapturedLogger;
+import events.listeners.GameEndLogger;
 import events.listeners.JumpsLogger;
 import events.listeners.MovesLogger;
 import interfaces.ICommand;
 import interfaces.*;
+import utils.LogUtils;
 
+import javax.swing.*;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -24,6 +29,8 @@ public class Game implements IGame {
     private Queue<ICommand> commandQueue;
     /** The board instance for the game. */
     private final IBoard board;
+
+    private Timer timer;
 
     /**
      * Constructs the game with the given board config and players.
@@ -42,6 +49,7 @@ public class Game implements IGame {
         MovesLogger movesLogger = new MovesLogger();
         JumpsLogger jumpsLogger = new JumpsLogger();
         CapturedLogger capturedLogger = new CapturedLogger();
+        GameEndLogger gameEndLogger = new GameEndLogger();
     }
 
     /**
@@ -114,5 +122,29 @@ public class Game implements IGame {
         if(board.getPlayers()[1].isFailed())
             return player1;
         return null;
+    }
+
+    @Override
+    public void run(IBoardView bv){
+        if (timer == null) {
+            timer = new Timer(16, e -> {
+                if (win() == null) {
+                    update();
+                    board.updateAll();
+                    if(bv != null) bv.repaint();
+                } else {
+                    EventPublisher.getInstance().publish(GameEvent.GAME_ENDED, new GameEvent(GameEvent.GAME_ENDED, null));
+                    stopGameLoop();
+                    LogUtils.logDebug("Game Over. Winner: Player " + win().getName());
+                }
+            });
+        }
+        timer.start();
+    }
+
+    public void stopGameLoop() {
+        if (timer != null && timer.isRunning()) {
+            timer.stop();
+        }
     }
 }

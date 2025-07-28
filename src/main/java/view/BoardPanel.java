@@ -1,5 +1,6 @@
 package view;
 
+import game.IBoardView;
 import interfaces.*;
 
 import board.BoardRenderer;
@@ -18,7 +19,7 @@ import utils.LogUtils;
 /**
  * Panel for displaying the game board and handling player input.
  */
-public class BoardPanel extends JPanel {
+public class BoardPanel extends JPanel implements IBoardView {
     private BufferedImage boardImage;
     private final IBoard board;
 
@@ -127,14 +128,6 @@ public class BoardPanel extends JPanel {
      */
     public void setOnPlayer2Action(Consumer<Void> handler) {
         this.onPlayer2Action = handler;
-    }
-
-    /**
-     * Updates all pieces on the board by calling board.updateAll().
-     */
-    public void updateAll() {
-        if (board != null)
-            board.updateAll();
     }
 
     /**

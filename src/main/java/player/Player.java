@@ -149,4 +149,10 @@ public class Player implements IPlayer{
         return score;
     }
 
+    @Override
+    public void replacePToQ(IPiece piece, BoardConfig bc){
+//        pieces.remove(piece);
+//        pieces.add(PiecesFactory.createPieceByCode(EPieceType.Q, id, piece.getPos(), bc));
+    }
+
 }

@@ -1,9 +1,11 @@
 package interfaces;
 
+import moves.Move;
 import pieces.EPieceType;
 import pieces.Position;
 
 import java.awt.geom.Point2D;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -96,7 +98,9 @@ public interface IPiece {
      * Gets the legal moves for the piece.
      * @return The Moves object
      */
-    Moves getMoves();
+    List<Move> getMoves();
+
+    void setMoves(List<Move> moves);
 
     /**
      * Gets the map of states for the piece.
@@ -109,4 +113,6 @@ public interface IPiece {
      * @return true if can move over, false otherwise
      */
     boolean canMoveOver();
+
+    Position getPos();
 }

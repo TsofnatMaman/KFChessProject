@@ -1,5 +1,6 @@
 package interfaces;
 
+import board.BoardConfig;
 import pieces.Position;
 
 import java.util.List;
@@ -60,4 +61,6 @@ public interface IPlayer {
     public ICommand handleSelection(IBoard board);
 
     int getScore();
+
+    void replacePToQ(IPiece piece, BoardConfig bc);
 }

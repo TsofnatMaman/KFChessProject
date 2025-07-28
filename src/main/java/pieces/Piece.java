@@ -2,10 +2,13 @@ package pieces;
 
 import board.BoardConfig;
 import interfaces.*;
+import moves.Move;
+import moves.Moves;
 import utils.LogUtils;
 
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 public class Piece implements IPiece {
@@ -15,7 +18,7 @@ public class Piece implements IPiece {
     private EState currentStateName;
     private IState currentState;
 
-    private final Moves moves;
+    private List<Move> moves;
 
     private Position pos;
 
@@ -30,14 +33,13 @@ public class Piece implements IPiece {
 
         this.type = type;
 
-        moves = new Moves(type, playerId);
+        moves = Moves.createMovesList(type, playerId);
     }
 
     @Override
     public int getPlayer() {
         return BoardConfig.getPlayerOf(Integer.parseInt(this.getId().split(",")[0]));
     }
-
 
 
     @Override
@@ -88,6 +90,7 @@ public class Piece implements IPiece {
         if (currentState.getGraphics() != null && currentState.getGraphics().isAnimationFinished()) {
             EState nextState = currentState.getPhysics().getNextStateWhenFinished();
             setState(nextState);
+
         }
     }
 
@@ -147,8 +150,13 @@ public class Piece implements IPiece {
     }
 
     @Override
-    public Moves getMoves() {
+    public List<Move> getMoves() {
         return moves;
+    }
+
+    @Override
+    public void setMoves(List<Move> moves) {
+        this.moves = moves;
     }
 
     @Override
@@ -163,11 +171,16 @@ public class Piece implements IPiece {
 
     @Override
     public String toString() {
-        return "Piece{" +
-                "id='" + id + '\'' +
-                ", type=" + type +
-                ", currentStateName=" + currentStateName +
-                ", pos=" + pos +
-                '}';
+        return type.toString()+getPlayer();
+    }
+
+    @Override
+    public Position getPos() {
+        return pos;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return id.equals(((Piece)obj).id);
     }
 }

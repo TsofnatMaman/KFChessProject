@@ -1,5 +1,8 @@
 package view;
 
+import events.EventPublisher;
+import events.GameEvent;
+import events.IEventListener;
 import interfaces.IGame;
 import interfaces.IPlayerCursor;
 import utils.LogUtils;
@@ -15,7 +18,7 @@ import java.io.IOException;
 /**
  * Full game panel with board in center, players on sides, and background.
  */
-public class GamePanel extends JPanel {
+public class GamePanel extends JPanel implements IEventListener {
     private final BoardPanel boardPanel;
     private final PlayerInfoPanel player1Panel;
     private final PlayerInfoPanel player2Panel;
@@ -23,7 +26,7 @@ public class GamePanel extends JPanel {
     private Timer timer;
     private Image backgroundImage;
 
-    public GamePanel(IGame model) {
+    public GamePanel(IGame model){
         this.model = model;
 
         // Set layout with gaps between regions
@@ -42,7 +45,6 @@ public class GamePanel extends JPanel {
         player2Panel = new PlayerInfoPanel(model.getPlayer2());
 
 
-        // צבע שקוף קליל או לבן עם אלפא
         Color semiTransparent = new Color(255, 255, 255, 180);
         player1Panel.setBackground(semiTransparent);
         player2Panel.setBackground(semiTransparent);
@@ -53,7 +55,7 @@ public class GamePanel extends JPanel {
 
         boardPanel = new BoardPanel(model.getBoard(), c1, c2);
         boardPanel.setPreferredSize(new Dimension(700, 700));
-        boardPanel.setOpaque(false); // חשוב: לא לצבוע רקע, כדי לראות את הרקע מתחת
+        boardPanel.setOpaque(false);
 
         // Events
         boardPanel.setOnPlayer1Action((v) -> model.handleSelection(model.getPlayer1()));
@@ -74,34 +76,14 @@ public class GamePanel extends JPanel {
         add(boardPanel, BorderLayout.CENTER);
 
         LogUtils.logDebug("Initial game state setup");
+
+        EventPublisher.getInstance().subscribe(GameEvent.GAME_ENDED, this);
     }
 
     public void run() {
-        startGameLoop();
+        model.run(boardPanel);
     }
 
-    public void startGameLoop() {
-        if (timer == null) {
-            timer = new Timer(16, e -> {
-                if (model.win() == null) {
-                    model.update();
-                    boardPanel.updateAll();
-                    boardPanel.repaint();
-                } else {
-                    stopGameLoop();
-                    LogUtils.logDebug("Game Over. Winner: Player " + model.win().getName());
-                    JOptionPane.showMessageDialog(this, "Game Over. Winner: Player " + model.win().getName());
-                }
-            });
-        }
-        timer.start();
-    }
-
-    public void stopGameLoop() {
-        if (timer != null && timer.isRunning()) {
-            timer.stop();
-        }
-    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -111,11 +93,8 @@ public class GamePanel extends JPanel {
         }
     }
 
-    public PlayerInfoPanel getPlayer1Panel() {
-        return player1Panel;
-    }
-
-    public PlayerInfoPanel getPlayer2Panel() {
-        return player2Panel;
+    @Override
+    public void onEvent(GameEvent event) {
+        JOptionPane.showMessageDialog(this, "Game Over. Winner: Player " + model.win().getName());
     }
 }
