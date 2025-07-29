@@ -46,7 +46,6 @@ public class PiecesFactory {
             // Step 1 – Find all existing states in the states directory
             URL dirURL = PiecesFactory.class.getResource(basePath);
             if (dirURL == null || !dirURL.getProtocol().equals("file")) {
-                System.err.println("Cannot load states from: " + basePath);
                 LogUtils.logDebug("Cannot load states from: " + basePath);
                 return null;
             }
@@ -61,7 +60,6 @@ public class PiecesFactory {
                 String configPath = basePath + stateName + "/config.json";
                 InputStream is = PiecesFactory.class.getResourceAsStream(configPath);
                 if (is == null) {
-                    System.err.println("Missing config for state: " + stateName);
                     LogUtils.logDebug("Missing config for state: " + stateName);
                     continue;
                 }
@@ -99,9 +97,9 @@ public class PiecesFactory {
             return new Piece(id, code, playerId, states, initialState, pos);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            LogUtils.logDebug("Exception in createPieceByCode: " + e.getMessage());
-            return null;
+            String mes = "Exception in createPieceByCode: " + e.getMessage();
+            LogUtils.logDebug(mes);
+            throw new RuntimeException(mes);
         }
     }
 

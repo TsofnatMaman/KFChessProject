@@ -36,7 +36,7 @@ public class GamePanel extends JPanel implements IEventListener {
         try {
             backgroundImage = ImageIO.read(getClass().getClassLoader().getResource("background/background.jpg"));
         } catch (IOException | IllegalArgumentException e) {
-            System.err.println("Could not load background image: " + e.getMessage());
+            LogUtils.logDebug("Could not load background image: " + e.getMessage());
         }
 
         // Players info panels

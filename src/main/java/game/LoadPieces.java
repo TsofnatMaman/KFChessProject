@@ -49,7 +49,7 @@ public class LoadPieces {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
         }
     }
 

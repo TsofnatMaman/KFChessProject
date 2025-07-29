@@ -30,7 +30,6 @@ public class GraphicsLoader {
             cache.put(path, image);
             return image;
         } catch (IOException | IllegalArgumentException e) {
-            System.err.println("Failed to load sprite: " + path);
             LogUtils.logDebug("Failed to load sprite: " + path);
             return null;
         }
@@ -49,6 +48,9 @@ public class GraphicsLoader {
             sprites.add(sprite);
             index++;
         }
+
+        if(sprites.isEmpty())
+            throw new RuntimeException("failed to load piece images");
 
         return sprites.toArray(new BufferedImage[0]);
     }
