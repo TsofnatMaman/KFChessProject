@@ -271,7 +271,7 @@
 
                 // Check if capturing own piece
                 IPiece toPiece = getPiece(to);
-                return toPiece == null || fromPiece.getPlayer() != toPiece.getPlayer();
+                return toPiece == null || (fromPiece.getPlayer() != toPiece.getPlayer() || toPiece.getCurrentStateName().isCanMoveOver());
             }
 
             /**

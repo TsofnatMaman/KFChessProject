@@ -32,6 +32,9 @@ public class Game implements IGame {
 
     private Timer timer;
 
+    private long startTimeNano;
+    private boolean running;
+
     /**
      * Constructs the game with the given board config and players.
      * Initializes the board and command queue.
@@ -128,6 +131,11 @@ public class Game implements IGame {
     public void run(IBoardView bv){
         if (timer == null) {
             timer = new Timer(16, e -> {
+                if(!running){
+                    startTimeNano = System.nanoTime();
+                    running = true;
+                }
+
                 if (win() == null) {
                     update();
                     board.updateAll();
@@ -146,5 +154,13 @@ public class Game implements IGame {
         if (timer != null && timer.isRunning()) {
             timer.stop();
         }
+        running = false;
+    }
+
+    @Override
+    public long getElapsedTimeMillis() {
+        if (!running) return 0;
+        long elapsedNano = System.nanoTime() - startTimeNano;
+        return elapsedNano / 1_000_000; // convert from nano to milliseconds
     }
 }

@@ -88,25 +88,21 @@ public class BoardPanel extends JPanel implements IBoardView {
                 if (selected1 == null) {
                     IPiece p = board.getPiece(pos);
                     if (p == null || p.isCaptured() || board.getPlayerOf(p) != 0 || !p.getCurrentStateName().isCanAction()) {
-                        System.err.println("can not choose piece");
                         LogUtils.logDebug("can not choose piece");
                     } else {
                         selected1 = pos;
                         legalMoves1 = board.getLegalMoves(pos);
                     }
                 } else {
-                    if (legalMoves1.contains(pos)) {
-                        board.move(selected1, pos);
-                        board.updateAll();
-                    }
                     selected1 = null;
                     legalMoves1 = Collections.emptyList();
                 }
                 if (onPlayer1Action != null) onPlayer1Action.accept(null);
+                repaint();
             }
-        }
+            }
 
-        switch (key) {
+            switch (key) {
             case KeyEvent.VK_W -> cursor2.moveUp();
             case KeyEvent.VK_S -> cursor2.moveDown();
             case KeyEvent.VK_A -> cursor2.moveLeft();
@@ -123,10 +119,6 @@ public class BoardPanel extends JPanel implements IBoardView {
                         legalMoves2 = board.getLegalMoves(pos);
                     }
                 } else {
-                    if (legalMoves2.contains(pos)) {
-                        board.move(selected2, pos);
-                        board.updateAll();
-                    }
                     selected2 = null;
                     legalMoves2 = Collections.emptyList();
                 }

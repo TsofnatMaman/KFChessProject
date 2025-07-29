@@ -25,6 +25,9 @@ public class GamePanel extends JPanel implements IEventListener {
     private final IGame model;
     private Image backgroundImage;
 
+    private JLabel timerLabel;
+    private Timer timerForUI;
+
     public GamePanel(IGame model){
         this.model = model;
 
@@ -42,7 +45,6 @@ public class GamePanel extends JPanel implements IEventListener {
         // Players info panels
         player1Panel = new PlayerInfoPanel(model.getPlayer1());
         player2Panel = new PlayerInfoPanel(model.getPlayer2());
-
 
         Color semiTransparent = new Color(255, 255, 255, 180);
         player1Panel.setBackground(semiTransparent);
@@ -74,6 +76,17 @@ public class GamePanel extends JPanel implements IEventListener {
         add(player2Panel, BorderLayout.EAST);
         add(boardPanel, BorderLayout.CENTER);
 
+        // --- הוספת תצוגת טיימר מעל הלוח ---
+        timerLabel = new JLabel("Time: 00:00");
+        timerLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        timerLabel.setOpaque(false);
+        add(timerLabel, BorderLayout.NORTH);
+
+        timerForUI = new Timer(1000, e -> updateTimer());
+        timerForUI.start();
+        // ---------------------------------------
+
         LogUtils.logDebug("Initial game state setup");
 
         EventPublisher.getInstance().subscribe(GameEvent.GAME_ENDED, this);
@@ -83,6 +96,12 @@ public class GamePanel extends JPanel implements IEventListener {
         model.run(boardPanel);
     }
 
+    private void updateTimer() {
+        long elapsedMillis = model.getElapsedTimeMillis();
+        int seconds = (int) (elapsedMillis / 1000) % 60;
+        int minutes = (int) (elapsedMillis / (1000 * 60));
+        timerLabel.setText(String.format("Time: %02d:%02d", minutes, seconds));
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -94,6 +113,7 @@ public class GamePanel extends JPanel implements IEventListener {
 
     @Override
     public void onEvent(GameEvent event) {
+        timerForUI.stop();
         JOptionPane.showMessageDialog(this, "Game Over. Winner: Player " + model.win().getName());
     }
 }
