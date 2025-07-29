@@ -21,8 +21,8 @@ public class Main {
 
             BoardConfig boardConfig = new BoardConfig(new Dimension(8),new Dimension(64*8));
 
-            IPlayer p1 = new Player("Shira",new PlayerCursor(new Position(0,0), Color.RED), boardConfig);
-            IPlayer p2 = new Player("Tsofnat",new PlayerCursor(new Position(7,7),Color.BLUE), boardConfig);
+            IPlayer p1 = new Player("player 1",new PlayerCursor(new Position(0,0), Color.RED), boardConfig);
+            IPlayer p2 = new Player("player 2",new PlayerCursor(new Position(7,7),Color.BLUE), boardConfig);
 
             IGame game = new Game(boardConfig ,p1, p2);
             GamePanel gameView = new GamePanel(game);
